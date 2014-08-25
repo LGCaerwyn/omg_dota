@@ -144,6 +144,7 @@ function DotaPvP:InitGameMode()
 
 	-- Enable the standard Dota PvP game rules
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled( true )
+	GameRules:SetSameHeroSelectionEnabled( true )
 
 	-- Register Think
 	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
@@ -153,6 +154,9 @@ function DotaPvP:InitGameMode()
 	ListenToGameEvent('npc_spawned', Dynamic_Wrap(DotaPvP, 'OnNPCSpawned'), self)
 	ListenToGameEvent('entity_killed', Dynamic_Wrap(DotaPvP, 'OnEntityKilled'), self)
 	ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(DotaPvP, 'OnAbilityUsed'), self)
+	
+	 -- Register Commands
+	Convars:RegisterCommand( "wtf", Dynamic_Wrap(DotaPvP, 'ToggleWTFMode'), "A console command to toggle the wtf mode", 0 )
 	
     -- userID map
     self.vUserIDMap = {}
@@ -188,6 +192,27 @@ end
 --------------------------------------------------------------------------------
 function DotaPvP:GameThink()
 	return 0.25
+end
+
+-- This is an example console command
+function DotaPvP:ToggleWTFMode()
+	local cmdPlayer = Convars:GetCommandClient()
+	if cmdPlayer then
+		local playerID = cmdPlayer:GetPlayerID()
+		if playerID ~= nil and playerID ~= -1 then
+			if GameRules:GetGameTime() > 30 then
+				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 30 seconds.', false)
+			else
+				if wtf_mode == 0 then
+					wtf_mode = 1
+					Say(nil, COLOR_BLUE..'WTF enabled!!!', false)
+				else	
+					wtf_mode = 0
+					Say(nil, COLOR_BLUE..'WTF disabled!!!', false)
+				end
+			end
+		end
+	end
 end
 
 function DotaPvP:ResetBuilds()
