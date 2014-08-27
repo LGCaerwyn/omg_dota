@@ -162,22 +162,14 @@ function DotaPvP:InitGameMode()
     self.vUserIDMap = {}
     self.nLowestUserID = 2
 
-    -- Load initital Values
-    self:_SetInitialValues()
-			
-	print( "Dota PvP game mode loaded." )
-end
-
-function DotaPvP:_SetInitialValues()
     -- Change random seed
-    local timeTxt = string.gsub(string.gsub(GetSystemTime(), ':', ''), '0','')
-    math.randomseed(tonumber(timeTxt))
+    local seed = string.gsub(string.gsub(GetSystemTime(), ':', ''), '0','')
+    math.randomseed(tonumber(seed))
 
     -- Load ability List
     self:LoadAbilityList()
-
-    -- Stores the current skill list for each hero
-    self.currentSkillList = {}
+			
+	print( "Dota PvP game mode loaded." )
 end
 
 --------------------------------------------------------------------------------
@@ -378,49 +370,20 @@ function DotaPvP:GetRandomAbility(sort)
     return self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
 end
 
-function DotaPvP:GetHeroSkills(heroClass)
-    local skills = {}
-
-    -- Build list of abilities
-    for heroName, values in pairs(self.heroListKV) do
-        if heroName == heroClass then
-            for i = 1, 16 do
-                local ab = values["Ability"..i]
-                if ab and ab ~= 'attribute_bonus' then
-                    table.insert(skills, ab)
-                end
-            end
-        end
-    end
-
-    return skills
-end
-
 function DotaPvP:RemoveAllSkills(hero)
-    -- Check if we've touched this hero before
-    if not self.currentSkillList[hero] then
-        -- Grab the name of this hero
-        local heroClass = hero:GetUnitName()
-
-        local skills = self:GetHeroSkills(heroClass)
-
-        -- Store it
-        self.currentSkillList[hero] = skills
-    end
-
-    -- Remove all old skills
-    for k,v in pairs(self.currentSkillList[hero]) do
-        if hero:HasAbility(v) then
-            hero:RemoveAbility(v)
-        end
-    end
+    for index = 0, 16 do
+		if hero:GetAbilityByIndex(index) ~= nil then
+			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
+			hero:RemoveAbility(abilityName)
+		end
+	end
 end
 
 function DotaPvP:RefreshAllSkills(hero)
 	-- Refresh mana
 	hero:GiveMana(99999)
     -- Refresh all skills
-	for index = 0, 6, 1 do
+	for index = 0, 16 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			hero:GetAbilityByIndex(index):EndCooldown()
 		end
@@ -457,7 +420,6 @@ function DotaPvP:ApplyBuild(hero, build)
 
         -- Add to build
         hero:AddAbility(v)
-        self.currentSkillList[hero][k] = v
     end
 
     -- Add missing abilities
@@ -465,9 +427,6 @@ function DotaPvP:ApplyBuild(hero, build)
     for k,v in pairs(extraSkills) do
         -- Add the ability
         hero:AddAbility(k)
-
-        -- Store that we have it
-        self.currentSkillList[hero][i] = k
 
         -- Move onto the next slot
         i = i + 1
