@@ -255,8 +255,8 @@ function DotaPvP:ToggleWTFMode()
 	if cmdPlayer then
 		local playerID = cmdPlayer:GetPlayerID()
 		if playerID ~= nil and playerID ~= -1 then
-			if GameRules:GetGameTime() > 30 then
-				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 30 seconds.', false)
+			if GameRules:GetGameTime() > 60 then
+				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 60 seconds.', false)
 			else
 				if wtf_mode == 0 then
 					wtf_mode = 1
@@ -411,6 +411,18 @@ function DotaPvP:ApplyBuild(hero, build)
         -- Move onto the next slot
         i = i + 1
     end
+	
+	-- Add skill 'attribute_bonus'
+	hero:AddAbility('attribute_bonus')
+	
+	-- print all abilities
+	print('Hero:', hero:GetUnitName())
+	for index = 0, 16 do
+		if hero:GetAbilityByIndex(index) ~= nil then
+			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
+			print(abilityName)
+		end
+	end
 end
 
 function DotaPvP:ChangeHero(hero, newHeroName)
