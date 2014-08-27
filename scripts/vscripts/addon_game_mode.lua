@@ -271,11 +271,11 @@ function DotaPvP:OnNPCSpawned(keys)
 end
 
 function DotaPvP:OnAbilityUsed(keys)
-    local ply = EntIndexToHScript( keys.player )
+    local playerID = EntIndexToHScript( keys.PlayerID )
 	
 	if wtf_mode == 1 then
-		if self:IsValidPlayerID(ply:GetPlayerID()) then
-			DotaPvP:RefreshAllSkills(ply:GetAssignedHero())
+		if self:IsValidPlayerID(playerID) then
+			DotaPvP:RefreshAllSkills(PlayerResource:GetPlayer(playerID):GetAssignedHero())
 		end
 	end
 end
