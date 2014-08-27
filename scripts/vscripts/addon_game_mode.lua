@@ -177,119 +177,6 @@ function DotaPvP:GameThink()
 	return 0.25
 end
 
--- This is an example console command
-function DotaPvP:ToggleWTFMode()
-	local cmdPlayer = Convars:GetCommandClient()
-	if cmdPlayer then
-		local playerID = cmdPlayer:GetPlayerID()
-		if playerID ~= nil and playerID ~= -1 then
-			if GameRules:GetGameTime() > 30 then
-				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 30 seconds.', false)
-			else
-				if wtf_mode == 0 then
-					wtf_mode = 1
-					Say(nil, COLOR_BLUE..'WTF enabled!!!', false)
-				else	
-					wtf_mode = 0
-					Say(nil, COLOR_BLUE..'WTF disabled!!!', false)
-				end
-			end
-		end
-	end
-end
-
-function DotaPvP:OnConnectFull(keys)
-    -- Grab the entity index of this player
-    local entIndex = keys.index+1
-    local ply = EntIndexToHScript(entIndex)
-
-    local playerID = ply:GetPlayerID()
-	
-    -- Store into our map
-    self.vUserIDMap[keys.userid] = ply
-    self.nLowestUserID = self.nLowestUserID + 1
-end
-
-function DotaPvP:OnNPCSpawned(keys)
-    local unit = EntIndexToHScript( keys.entindex )
-	
-    if unit and unit:IsRealHero() then
-		local playerID = unit:GetPlayerOwnerID()
-		if self:IsValidPlayerID(playerID) then
-			local hero = self:ChangeHero(unit,self:ChooseRandomHero())
-			if hero == nil then
-				self:ApplyBuild(unit, {
-					[1] = self:GetRandomAbility(),
-					[2] = self:GetRandomAbility(),
-					[3] = self:GetRandomAbility(),
-					[4] = self:GetRandomAbility('Ults')
-				})
-			end
-		end
-    end
-end
-
-function DotaPvP:OnAbilityUsed(keys)
-    local playerID = EntIndexToHScript( keys.PlayerID )
-	
-	if wtf_mode == 1 then
-		if self:IsValidPlayerID(playerID) then
-			DotaPvP:RefreshAllSkills(PlayerResource:GetPlayer(playerID):GetAssignedHero())
-		end
-	end
-end
-
-function DotaPvP:OnEntityKilled(keys)	
-	local killedUnit = EntIndexToHScript( keys.entindex_killed )
-    local killerEntity = nil
-
-    if keys.entindex_attacker ~= nil then
-        killerEntity = EntIndexToHScript( keys.entindex_attacker )
-    end
-	
-    if killedUnit and killedUnit:IsRealHero() then		
-		--TODO Check how to enable 'fast respawn'
-		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
-		--killedUnit:SetTimeUntilRespawn(killedUnit:GetTimeUntilRespawn()/2)
-		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
-    end
-end
-
--- Loops over all players, return true to stop the loop
-function DotaPvP:LoopOverPlayers(callback)
-    for k, v in pairs(self.vUserIDMap) do
-        -- Validate the player
-        if IsValidEntity(v) then
-            -- Run the callback
-            if callback(v, v:GetPlayerID()) then
-                break
-            end
-        end
-    end
-end
-
-function DotaPvP:IsValidPlayerID(checkPlayerID)
-    local isValid = false
-    self:LoopOverPlayers(function(ply, playerID)
-        if playerID == checkPlayerID then
-            isValid = true
-            return true
-        end
-    end)
-
-    return isValid
-end
-
-function DotaPvP:GetPlayerList()
-    local plyList = {}
-
-    self:LoopOverPlayers(function(ply, playerID)
-        table.insert(plyList, ply)
-    end)
-
-    return plyList
-end
-
 function DotaPvP:LoadAbilityList()
     local abs = LoadKeyValues("scripts/kv/abilities.kv")
     self.heroListKV = LoadKeyValues("scripts/npc/npc_heroes.txt")
@@ -362,32 +249,125 @@ function DotaPvP:FindHeroOwner(skillName)
     return heroOwner
 end
 
-function DotaPvP:GetRandomAbility(sort)
-    if not sort or not self.vAbListSort[sort] then
-        sort = 'Abs'
+-- This is an example console command
+function DotaPvP:ToggleWTFMode()
+	local cmdPlayer = Convars:GetCommandClient()
+	if cmdPlayer then
+		local playerID = cmdPlayer:GetPlayerID()
+		if playerID ~= nil and playerID ~= -1 then
+			if GameRules:GetGameTime() > 30 then
+				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 30 seconds.', false)
+			else
+				if wtf_mode == 0 then
+					wtf_mode = 1
+					Say(nil, COLOR_BLUE..'WTF enabled!!!', false)
+				else	
+					wtf_mode = 0
+					Say(nil, COLOR_BLUE..'WTF disabled!!!', false)
+				end
+			end
+		end
+	end
+end
+
+function DotaPvP:OnConnectFull(keys)
+    -- Grab the entity index of this player
+    local entIndex = keys.index+1
+    local ply = EntIndexToHScript(entIndex)
+
+    local playerID = ply:GetPlayerID()
+	
+    -- Store into our map
+    self.vUserIDMap[keys.userid] = ply
+    self.nLowestUserID = self.nLowestUserID + 1
+end
+
+function DotaPvP:OnNPCSpawned(keys)
+    local unit = EntIndexToHScript( keys.entindex )
+	
+    if unit and unit:IsRealHero() then
+		local playerID = unit:GetPlayerOwnerID()
+		if self:IsValidPlayerID(playerID) then
+			local hero = self:ChangeHero(unit,self:ChooseRandomHero())
+			-- Change skills
+			if hero == nil then
+				self:ApplyBuild(unit, {
+					[1] = self:GetRandomAbility(),
+					[2] = self:GetRandomAbility(),
+					[3] = self:GetRandomAbility(),
+					[4] = self:GetRandomAbility('Ults')
+				})
+			else
+				self:ApplyBuild(hero, {
+					[1] = self:GetRandomAbility(),
+					[2] = self:GetRandomAbility(),
+					[3] = self:GetRandomAbility(),
+					[4] = self:GetRandomAbility('Ults')
+				})
+			end
+		end
     end
-
-    return self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
 end
 
-function DotaPvP:RemoveAllSkills(hero)
-    for index = 0, 16 do
-		if hero:GetAbilityByIndex(index) ~= nil then
-			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
-			hero:RemoveAbility(abilityName)
+function DotaPvP:OnAbilityUsed(keys)
+    local playerID = EntIndexToHScript( keys.PlayerID )
+	
+	if wtf_mode == 1 then
+		if self:IsValidPlayerID(playerID) then
+			DotaPvP:RefreshAllSkills(PlayerResource:GetPlayer(playerID):GetAssignedHero())
 		end
 	end
 end
 
-function DotaPvP:RefreshAllSkills(hero)
-	-- Refresh mana
-	hero:GiveMana(99999)
-    -- Refresh all skills
-	for index = 0, 16 do
-		if hero:GetAbilityByIndex(index) ~= nil then
-			hero:GetAbilityByIndex(index):EndCooldown()
-		end
-	end
+function DotaPvP:OnEntityKilled(keys)	
+	local killedUnit = EntIndexToHScript( keys.entindex_killed )
+    local killerEntity = nil
+
+    if keys.entindex_attacker ~= nil then
+        killerEntity = EntIndexToHScript( keys.entindex_attacker )
+    end
+	
+    if killedUnit and killedUnit:IsRealHero() then		
+		--TODO Check how to enable 'fast respawn'
+		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
+		--killedUnit:SetTimeUntilRespawn(killedUnit:GetTimeUntilRespawn()/2)
+		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
+    end
+end
+
+-- Loops over all players, return true to stop the loop
+function DotaPvP:LoopOverPlayers(callback)
+    for k, v in pairs(self.vUserIDMap) do
+        -- Validate the player
+        if IsValidEntity(v) then
+            -- Run the callback
+            if callback(v, v:GetPlayerID()) then
+                break
+            end
+        end
+    end
+end
+
+function DotaPvP:IsValidPlayerID(checkPlayerID)
+    local isValid = false
+    self:LoopOverPlayers(function(ply, playerID)
+        if playerID == checkPlayerID then
+            isValid = true
+            return true
+        end
+    end)
+
+    return isValid
+end
+
+function DotaPvP:GetPlayerList()
+    local plyList = {}
+
+    self:LoopOverPlayers(function(ply, playerID)
+        table.insert(plyList, ply)
+    end)
+
+    return plyList
 end
 
 function DotaPvP:ApplyBuild(hero, build)
@@ -469,15 +449,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
         local newHero = PlayerResource:ReplaceHeroWith(playerID, newHeroName, gold, exp)
 
         -- Validate new hero
-        if newHero then
-			-- Change skills
-			self:ApplyBuild(newHero, {
-				[1] = self:GetRandomAbility(),
-				[2] = self:GetRandomAbility(),
-				[3] = self:GetRandomAbility(),
-				[4] = self:GetRandomAbility('Ults')
-			})
-			
+        if newHero then			
             local blockers = {}
 
             -- Give items
@@ -511,4 +483,32 @@ end
 
 function DotaPvP:ChooseRandomHero()
     return self.heroList[math.random(1, #self.heroList)]
+end
+
+function DotaPvP:GetRandomAbility(sort)
+    if not sort or not self.vAbListSort[sort] then
+        sort = 'Abs'
+    end
+
+    return self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
+end
+
+function DotaPvP:RemoveAllSkills(hero)
+    for index = 0, 16 do
+		if hero:GetAbilityByIndex(index) ~= nil then
+			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
+			hero:RemoveAbility(abilityName)
+		end
+	end
+end
+
+function DotaPvP:RefreshAllSkills(hero)
+	-- Refresh mana
+	hero:GiveMana(99999)
+    -- Refresh all skills
+	for index = 0, 16 do
+		if hero:GetAbilityByIndex(index) ~= nil then
+			hero:GetAbilityByIndex(index):EndCooldown()
+		end
+	end
 end
