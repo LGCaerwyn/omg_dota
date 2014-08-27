@@ -162,9 +162,6 @@ function DotaPvP:InitGameMode()
     self.vUserIDMap = {}
     self.nLowestUserID = 2
 
-    -- Active Hero Map
-    self.vActiveHeroMap = {}
-
     -- Load initital Values
     self:_SetInitialValues()
 			
@@ -179,14 +176,8 @@ function DotaPvP:_SetInitialValues()
     -- Load ability List
     self:LoadAbilityList()
 
-    -- Timers
-    self.timers = {}
-
     -- Stores the current skill list for each hero
     self.currentSkillList = {}
-
-    -- Reset Builds
-    self:ResetBuilds()
 end
 
 --------------------------------------------------------------------------------
@@ -215,15 +206,6 @@ function DotaPvP:ToggleWTFMode()
 	end
 end
 
-function DotaPvP:ResetBuilds()
-    -- Store the default axe build for each player
-    self.selectedBuilds = {}
-
-    self:LoopOverPlayers(function(ply, playerID)
-        self.selectedBuilds[playerID] = self:GetDefaultBuild()
-    end)
-end
-
 function DotaPvP:OnConnectFull(keys)
     -- Grab the entity index of this player
     local entIndex = keys.index+1
@@ -234,21 +216,6 @@ function DotaPvP:OnConnectFull(keys)
     -- Store into our map
     self.vUserIDMap[keys.userid] = ply
     self.nLowestUserID = self.nLowestUserID + 1
-
-    self.selectedBuilds[playerID] = self:GetDefaultBuild()
-end
-
-function DotaPvP:GetDefaultBuild()
-    return {
-        hero = 'npc_dota_hero_axe',
-        skills = {
-            [1] = 'axe_berserkers_call',
-            [2] = 'axe_battle_hunger',
-            [3] = 'axe_counter_helix',
-            [4] = 'axe_culling_blade'
-        },
-        ready = false
-    }
 end
 
 function DotaPvP:OnNPCSpawned(keys)
@@ -329,16 +296,6 @@ function DotaPvP:GetPlayerList()
     end)
 
     return plyList
-end
-
-function DotaPvP:SetActiveHero(hero, playerID)
-    if hero then
-        self.vActiveHeroMap[playerID or hero:GetPlayerID()] = hero
-    end
-end
-
-function DotaPvP:GetActiveHero(playerID)
-    return self.vActiveHeroMap[playerID]
 end
 
 function DotaPvP:LoadAbilityList()
@@ -472,8 +429,10 @@ end
 
 function DotaPvP:ApplyBuild(hero, build)
     if hero == nil then
-        Say(nil, COLOR_RED..'WARNING: Failed to apply a build!', false)
-        return
+		if build == nil then
+			Say(nil, COLOR_RED..'WARNING: Failed to apply a build!', false)
+			return
+		end
     end
 
     -- Grab playerID
@@ -481,9 +440,6 @@ function DotaPvP:ApplyBuild(hero, build)
     if not self:IsValidPlayerID(playerID) then
         return
     end
-
-    -- Make sure the build was parsed
-    build = build or self.selectedBuilds[playerID].skills
 
     -- Remove all the skills from our hero
     self:RemoveAllSkills(hero)
@@ -552,7 +508,6 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 
         -- Replace the hero
         local newHero = PlayerResource:ReplaceHeroWith(playerID, newHeroName, gold, exp)
-        self:SetActiveHero(newHero)
 
         -- Validate new hero
         if newHero then
