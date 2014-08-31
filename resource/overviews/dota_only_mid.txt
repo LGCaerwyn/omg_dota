@@ -1,0 +1,8 @@
+dota_only_mid
+{
+	material materials/overviews/dota_only_mid.vmat
+	pos_x -7072
+	pos_y 7898
+	scale 14.531
+}
+

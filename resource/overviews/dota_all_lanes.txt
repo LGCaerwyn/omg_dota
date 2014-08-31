@@ -1,0 +1,8 @@
+dota_all_lanes
+{
+	material materials/overviews/dota_all_lanes.vmat
+	pos_x -7072
+	pos_y 7898
+	scale 14.531
+}
+
