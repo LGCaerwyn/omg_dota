@@ -169,7 +169,7 @@ function DotaPvP:InitGameMode()
     -- Load ability List
     self:LoadAbilityList()
 			
-	print( "Dota PvP game mode loaded." )
+	print( "Random OMG loaded." )
 end
 
 --------------------------------------------------------------------------------
@@ -396,6 +396,12 @@ function DotaPvP:ApplyBuild(hero, build)
         if self.subAbilities[v] then
             -- Store that we need this skill
             extraSkills[self.subAbilities[v]] = true
+			-- TODO: Check if there is a better way to do this
+			-- Check if this skill has sub abilities too
+			if self.subAbilities[self.subAbilities[v]] then
+				-- Store that we need this skill
+				extraSkills[self.subAbilities[self.subAbilities[v]]] = true
+			end
         end
 
         -- Add to build
