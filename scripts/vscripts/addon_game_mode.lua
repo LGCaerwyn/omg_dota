@@ -147,6 +147,7 @@ function DotaPvP:InitGameMode()
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled( true )
 	GameRules:SetSameHeroSelectionEnabled( true )
 	GameRules:SetHeroSelectionTime( 0.0 )
+	GameRules:GetGameModeEntity():SetFixedRespawnTime( -1 )
 
 	-- Register Think
 	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
