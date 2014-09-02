@@ -174,6 +174,9 @@ function DotaPvP:InitGameMode()
 	
 	-- list of players with heroes
 	self.hasHero = {}
+	
+	-- list of players who need a new hero
+	self.needHero = {}
 			
 	print( "Random OMG loaded." )
 end
@@ -187,6 +190,7 @@ function DotaPvP:GameThink()
 				print('Try to pick a hero for user:', playerID)
 				CreateHeroForPlayer(self:ChooseRandomHero(),ply)
 				self.hasHero[playerID] = true
+				self.needHero[playerID] = false
 				print('Hero picked for user:', playerID)
 			end
 		end
@@ -306,7 +310,10 @@ function DotaPvP:OnNPCSpawned(keys)
 		local playerID = unit:GetPlayerOwnerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
 			local hero = nil
-			--hero = self:ChangeHero(unit,self:ChooseRandomHero())
+			if self.needHero[playerID] then
+				self.needHero[playerID] = false
+				--hero = self:ChangeHero(unit,self:ChooseRandomHero())
+			end
 			-- Change skills
 			if hero == nil then
 				self:ApplyBuild(unit, {
@@ -317,12 +324,12 @@ function DotaPvP:OnNPCSpawned(keys)
 				})
 				unit:SetAbilityPoints(unit:GetLevel())
 			else
-				self:ApplyBuild(hero, {
+				--[[self:ApplyBuild(hero, {
 					[1] = self:GetRandomAbility(),
 					[2] = self:GetRandomAbility(),
 					[3] = self:GetRandomAbility(),
 					[4] = self:GetRandomAbility('Ults')
-				})
+				})]]
 			end
 		end
     end
@@ -345,6 +352,9 @@ function DotaPvP:OnEntityKilled(keys)
 	end
 	
 	if killedUnit and killedUnit:IsRealHero() then
+		local playerID = killedUnit:GetPlayerOwnerID()
+		self.needHero[playerID] = true
+		
 		--TODO Check how to enable 'fast respawn'
 		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
 		--killedUnit:SetTimeUntilRespawn(killedUnit:GetTimeUntilRespawn()/2)
@@ -404,13 +414,13 @@ function DotaPvP:ApplyBuild(hero, build)
 	hero:AddAbility('attribute_bonus')
 	
 	-- print all abilities
-	--print('Hero:', hero:GetUnitName())
-	--for index = 0, 16 do
-	--	if hero:GetAbilityByIndex(index) ~= nil then
-	--		abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
-	--		print(abilityName)
-	--	end
-	--end
+	--[[print('Hero:', hero:GetUnitName())
+	for index = 0, 16 do
+		if hero:GetAbilityByIndex(index) ~= nil then
+			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
+			print(abilityName)
+		end
+	end]]
 end
 
 function DotaPvP:ChangeHero(hero, newHeroName)
