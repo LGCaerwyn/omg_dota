@@ -157,7 +157,7 @@ function DotaPvP:InitGameMode()
 	ListenToGameEvent('npc_spawned', Dynamic_Wrap(DotaPvP, 'OnNPCSpawned'), self)
 	ListenToGameEvent('entity_killed', Dynamic_Wrap(DotaPvP, 'OnEntityKilled'), self)
 	ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(DotaPvP, 'OnAbilityUsed'), self)
-	ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(DotaPvP, 'OnGameRulesStateChange'), self)	
+	ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(DotaPvP, 'OnGameRulesStateChange'), self)
 
 	-- Register Commands
 	Convars:RegisterCommand( "wtf", Dynamic_Wrap(DotaPvP, 'ToggleWTFMode'), "A console command to toggle the wtf mode", 0 )
@@ -192,7 +192,8 @@ function DotaPvP:GameThink()
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if not self.hasHero[playerID] then
 				print('Try to pick a hero for user:', playerID)
-				CreateHeroForPlayer(self:ChooseRandomHero(),ply)
+				--CreateHeroForPlayer(self:ChooseRandomHero(),ply)
+				ply:MakeRandomHeroSelection()
 				self.hasHero[playerID] = true
 				self.needHero[playerID] = false
 				print('Hero picked for user:', playerID)
