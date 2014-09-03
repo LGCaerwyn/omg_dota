@@ -157,10 +157,11 @@ function DotaPvP:InitGameMode()
 	ListenToGameEvent('npc_spawned', Dynamic_Wrap(DotaPvP, 'OnNPCSpawned'), self)
 	ListenToGameEvent('entity_killed', Dynamic_Wrap(DotaPvP, 'OnEntityKilled'), self)
 	ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(DotaPvP, 'OnAbilityUsed'), self)
-	
-	 -- Register Commands
+	ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(DotaPvP, 'OnGameRulesStateChange'), self)	
+
+	-- Register Commands
 	Convars:RegisterCommand( "wtf", Dynamic_Wrap(DotaPvP, 'ToggleWTFMode'), "A console command to toggle the wtf mode", 0 )
-	
+
 	-- userID map
 	self.vUserIDMap = {}
 	self.nLowestUserID = 2
@@ -171,13 +172,16 @@ function DotaPvP:InitGameMode()
 
 	-- Load ability List
 	self:LoadAbilityList()
-	
+
 	-- list of players with heroes
 	self.hasHero = {}
-	
+
 	-- list of players who need a new hero
 	self.needHero = {}
-			
+
+	-- store if a hero is already precached
+	self.isPrecached = {}
+
 	print( "Random OMG loaded." )
 end
 
@@ -185,8 +189,8 @@ end
 function DotaPvP:GameThink()
 	for _,ply in pairs( self.vUserIDMap ) do
 		local playerID = ply:GetPlayerID()
-		if PlayerResource:IsValidPlayerID(playerID) then	
-			if not self.hasHero[playerID] then		
+		if PlayerResource:IsValidPlayerID(playerID) then
+			if not self.hasHero[playerID] then
 				print('Try to pick a hero for user:', playerID)
 				CreateHeroForPlayer(self:ChooseRandomHero(),ply)
 				self.hasHero[playerID] = true
@@ -291,6 +295,37 @@ function DotaPvP:ToggleWTFMode()
 	end
 end
 
+-- The overall game state has changed
+function DotaPvP:OnGameRulesStateChange(keys)
+	print("[RANDOM OMG] GameRules State Changed")
+	local newState = GameRules:State_Get()
+	if newState == DOTA_GAMERULES_STATE_INIT then
+		print('New State: DOTA_GAMERULES_STATE_INIT')
+	elseif newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
+		print('New State: DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
+	elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
+		print('New State: DOTA_GAMERULES_STATE_HERO_SELECTION')
+	elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME then
+		print('New State: DOTA_GAMERULES_STATE_STRATEGY_TIME')
+	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
+		print('New State: DOTA_GAMERULES_STATE_PRE_GAME')
+		self:PostLoadPrecache()
+	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+		print('New State: DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
+	end
+end
+
+function DotaPvP:PostLoadPrecache()
+	print('PostLoadPrecaching ...')
+	for _,heroName in pairs( self.heroList ) do
+		if not self.isPrecached[heroName] then
+			PrecacheUnitByNameAsync(heroName, function(...) end)
+			self.isPrecached[heroName] = true
+		end
+	end
+	print('Done postLoadPrecaching!')
+end
+
 function DotaPvP:OnConnectFull(keys)
 	-- Grab the entity index of this player
 	local entIndex = keys.index+1
@@ -309,13 +344,11 @@ function DotaPvP:OnNPCSpawned(keys)
 	if unit and unit:IsRealHero() then
 		local playerID = unit:GetPlayerOwnerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
-			local hero = nil
 			if self.needHero[playerID] then
 				self.needHero[playerID] = false
-				--hero = self:ChangeHero(unit,self:ChooseRandomHero())
-			end
-			-- Change skills
-			if hero == nil then
+				self:ChangeHero(unit,self:ChooseRandomHero())
+			else
+				-- Change skills
 				self:ApplyBuild(unit, {
 					[1] = self:GetRandomAbility(),
 					[2] = self:GetRandomAbility(),
@@ -323,29 +356,22 @@ function DotaPvP:OnNPCSpawned(keys)
 					[4] = self:GetRandomAbility('Ults')
 				})
 				unit:SetAbilityPoints(unit:GetLevel())
-			else
-				--[[self:ApplyBuild(hero, {
-					[1] = self:GetRandomAbility(),
-					[2] = self:GetRandomAbility(),
-					[3] = self:GetRandomAbility(),
-					[4] = self:GetRandomAbility('Ults')
-				})]]
 			end
 		end
-    end
+	end
 end
 
 function DotaPvP:OnAbilityUsed(keys)
 	if wtf_mode == 1 then
 		for _,ply in pairs( self.vUserIDMap ) do
-			DotaPvP:RefreshAllSkills(ply:GetAssignedHero())	
+			DotaPvP:RefreshAllSkills(ply:GetAssignedHero())
 		end
 	end
 end
 
 function DotaPvP:OnEntityKilled(keys)
 	local killedUnit = EntIndexToHScript( keys.entindex_killed )
-    local killerEntity = nil
+	local killerEntity = nil
 
 	if keys.entindex_attacker ~= nil then
 		killerEntity = EntIndexToHScript( keys.entindex_attacker )
@@ -460,12 +486,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 		end
 
 		-- Replace the hero
-		local newHero = nil
-		print('playerID:', playerID)
-		print('newHeroName:', newHeroName)
-		print('gold:', gold)
-		print('exp:', exp)
-		newHero = PlayerResource:ReplaceHeroWith(playerID, newHeroName, gold, exp)
+		local newHero = PlayerResource:ReplaceHeroWith(playerID, newHeroName, gold, exp)
 
 		-- Validate new hero
 		if newHero then
@@ -500,7 +521,14 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 end
 
 function DotaPvP:ChooseRandomHero()
-	return self.heroList[math.random(1, #self.heroList)]
+	local hero = self.heroList[math.random(1, #self.heroList)]
+	-- Precache the hero if needed	
+	if not self.isPrecached[hero] then
+		print('Precache', hero)
+		PrecacheUnitByNameAsync(hero, function(...) end)
+		self.isPrecached[hero] = true
+	end
+	return hero
 end
 
 function DotaPvP:GetRandomAbility(sort)
