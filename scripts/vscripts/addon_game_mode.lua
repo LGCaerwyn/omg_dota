@@ -379,7 +379,8 @@ function DotaPvP:OnEntityKilled(keys)
 	
 	if killedUnit and killedUnit:IsRealHero() then
 		local playerID = killedUnit:GetPlayerOwnerID()
-		self.needHero[playerID] = true
+		-- TODO: fix DM Mode
+		--self.needHero[playerID] = true
 		
 		--TODO Check how to enable 'fast respawn'
 		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
