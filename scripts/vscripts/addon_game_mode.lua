@@ -21,7 +21,7 @@ function Precache( context )
 	for sure in your game and that cannot or should not be precached asynchronously or
 	after the game loads.
 	]]
-	print('Precaching ...')
+	print('[RANDOM OMG] Precaching ...')
 	-- looks like this isn't working
 	--PrecacheUnitByNameSync("npc_precache_everything", context)
 	PrecacheUnitByNameSync("npc_dota_hero_abaddon", context)
@@ -131,7 +131,7 @@ function Precache( context )
 	PrecacheUnitByNameSync("npc_dota_hero_wisp", context)
 	PrecacheUnitByNameSync("npc_dota_hero_witch_doctor", context)
 	PrecacheUnitByNameSync("npc_dota_hero_zuus", context)
-	print('Done precaching!')
+	print('[RANDOM OMG] Done precaching!')
 end
 
 -- disable 'wtf-mode' by default
@@ -151,6 +151,7 @@ function DotaPvP:InitGameMode()
 
 	-- Register Think
 	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
+	GameMode:SetContextThink( "DotaPvP:RespawnThink", function() return self:RespawnThink() end, 1 )
 
 	-- Register Game Events
 	ListenToGameEvent('player_connect_full', Dynamic_Wrap(DotaPvP, 'OnConnectFull'), self)
@@ -181,6 +182,8 @@ function DotaPvP:InitGameMode()
 
 	-- store if a hero is already precached
 	self.isPrecached = {}
+	
+	self.respawnHero = {}
 
 	print( "Random OMG loaded." )
 end
@@ -191,12 +194,26 @@ function DotaPvP:GameThink()
 		local playerID = ply:GetPlayerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if not self.hasHero[playerID] then
-				print('Try to pick a hero for user:', playerID)
+				print('[RANDOM OMG] Try to pick a hero for user:', playerID)
 				--CreateHeroForPlayer(self:ChooseRandomHero(),ply)
 				ply:MakeRandomHeroSelection()
 				self.hasHero[playerID] = true
 				self.needHero[playerID] = false
-				print('Hero picked for user:', playerID)
+				print('[RANDOM OMG] Hero picked for user:', playerID)
+			end
+		end
+	end
+	return 0.25
+end
+
+function DotaPvP:RespawnThink()
+	for playerID,hero in pairs( self.respawnHero ) do
+		if PlayerResource:IsValidPlayerID(playerID) then
+			if IsValidEntity(hero) then
+				if hero:IsAlive() then
+					table.remove(self.respawnHero, playerID)
+					self:ChangeHero(hero,self:ChooseRandomHero())
+				end
 			end
 		end
 	end
@@ -298,33 +315,26 @@ end
 
 -- The overall game state has changed
 function DotaPvP:OnGameRulesStateChange(keys)
-	print("[RANDOM OMG] GameRules State Changed")
 	local newState = GameRules:State_Get()
 	if newState == DOTA_GAMERULES_STATE_INIT then
-		print('New State: DOTA_GAMERULES_STATE_INIT')
 	elseif newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
-		print('New State: DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
 	elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
-		print('New State: DOTA_GAMERULES_STATE_HERO_SELECTION')
 	elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME then
-		print('New State: DOTA_GAMERULES_STATE_STRATEGY_TIME')
 	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
-		print('New State: DOTA_GAMERULES_STATE_PRE_GAME')
 		self:PostLoadPrecache()
 	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		print('New State: DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
 	end
 end
 
 function DotaPvP:PostLoadPrecache()
-	print('PostLoadPrecaching ...')
+	print('[RANDOM OMG] PostLoadPrecaching ...')
 	for _,heroName in pairs( self.heroList ) do
 		if not self.isPrecached[heroName] then
 			PrecacheUnitByNameAsync(heroName, function(...) end)
 			self.isPrecached[heroName] = true
 		end
 	end
-	print('Done postLoadPrecaching!')
+	print('[RANDOM OMG] Done postLoadPrecaching!')
 end
 
 function DotaPvP:OnConnectFull(keys)
@@ -347,7 +357,7 @@ function DotaPvP:OnNPCSpawned(keys)
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if self.needHero[playerID] then
 				self.needHero[playerID] = false
-				self:ChangeHero(unit,self:ChooseRandomHero())
+				self.respawnHero[playerID] = unit
 			else
 				-- Change skills
 				self:ApplyBuild(unit, {
@@ -380,8 +390,7 @@ function DotaPvP:OnEntityKilled(keys)
 	
 	if killedUnit and killedUnit:IsRealHero() then
 		local playerID = killedUnit:GetPlayerOwnerID()
-		-- TODO: fix DM Mode
-		--self.needHero[playerID] = true
+		self.needHero[playerID] = true
 		
 		--TODO Check how to enable 'fast respawn'
 		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
@@ -437,10 +446,10 @@ function DotaPvP:ApplyBuild(hero, build)
 		-- Move onto the next slot
 		i = i + 1
 	end
-	
+
 	-- Add skill 'attribute_bonus'
 	hero:AddAbility('attribute_bonus')
-	
+
 	-- print all abilities
 	--[[print('Hero:', hero:GetUnitName())
 	for index = 0, 16 do
@@ -526,7 +535,7 @@ function DotaPvP:ChooseRandomHero()
 	local hero = self.heroList[math.random(1, #self.heroList)]
 	-- Precache the hero if needed	
 	if not self.isPrecached[hero] then
-		print('Precache', hero)
+		print('[RANDOM OMG] Precache', hero)
 		PrecacheUnitByNameAsync(hero, function(...) end)
 		self.isPrecached[hero] = true
 	end
