@@ -184,6 +184,8 @@ function DotaPvP:InitGameMode()
 	self.isPrecached = {}
 	
 	self.respawnHero = {}
+	
+	self.hasCourier = {}
 
 	print( "Random OMG loaded." )
 end
@@ -355,6 +357,17 @@ function DotaPvP:OnNPCSpawned(keys)
 	if unit and unit:IsRealHero() then
 		local playerID = unit:GetPlayerOwnerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
+			if not self.hasCourier[unit:GetTeamNumber()] then
+				self.hasCourier[unit:GetTeamNumber()] = true
+				unit:AddItem(CreateItem('item_courier', unit, unit))
+				for i = 0,5 do
+					local item = unit:GetItemInSlot(i)
+					if item:GetName() == 'item_courier' then
+						item:CastAbility()
+						break
+					end
+				end
+			end
 			if self.needHero[playerID] then
 				self.needHero[playerID] = false
 				self.respawnHero[playerID] = unit
@@ -560,6 +573,10 @@ function DotaPvP:RemoveAllSkills(hero)
 end
 
 function DotaPvP:RefreshAllSkills(hero)
+	if hero == nil then
+		return
+	end
+
 	-- Refresh mana
 	hero:GiveMana(99999)
 	-- Refresh all skills
