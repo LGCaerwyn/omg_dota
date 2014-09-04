@@ -131,6 +131,7 @@ function Precache( context )
 	PrecacheUnitByNameSync("npc_dota_hero_wisp", context)
 	PrecacheUnitByNameSync("npc_dota_hero_witch_doctor", context)
 	PrecacheUnitByNameSync("npc_dota_hero_zuus", context)
+	PrecacheUnitByNameSync("npc_dota_hero_techies", context)
 	print('[RANDOM OMG] Done precaching!')
 end
 
