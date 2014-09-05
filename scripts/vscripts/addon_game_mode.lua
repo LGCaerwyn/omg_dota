@@ -22,8 +22,6 @@ function Precache( context )
 	after the game loads.
 	]]
 	--[[print('[RANDOM OMG] Precaching ...')
-	-- looks like this isn't working
-	--PrecacheUnitByNameSync("npc_precache_everything", context)
 	PrecacheUnitByNameSync("npc_dota_hero_abaddon", context)
 	PrecacheUnitByNameSync("npc_dota_hero_alchemist", context)
 	PrecacheUnitByNameSync("npc_dota_hero_ancient_apparition", context)
@@ -137,6 +135,7 @@ end
 
 -- disable 'wtf-mode' by default
 local wtf_mode = 0
+local precache = false
 
 --------------------------------------------------------------------------------
 -- INIT
@@ -181,9 +180,6 @@ function DotaPvP:InitGameMode()
 
 	-- list of players who need a new hero
 	self.needHero = {}
-
-	-- store if a hero is already precached
-	self.isPrecached = {}
 	
 	self.respawnHero = {}
 	
@@ -321,22 +317,31 @@ end
 function DotaPvP:OnGameRulesStateChange(keys)
 	local newState = GameRules:State_Get()
 	if newState == DOTA_GAMERULES_STATE_INIT then
+		print('DOTA_GAMERULES_STATE_INIT')
 	elseif newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
+		print('DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
+		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
+		print('DOTA_GAMERULES_STATE_HERO_SELECTION')
 	elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME then
+		print('DOTA_GAMERULES_STATE_STRATEGY_TIME')
 	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
-		self:PostLoadPrecache()
+		print('DOTA_GAMERULES_STATE_PRE_GAME')
+		if precache then
+			self:PostLoadPrecache()
+		end
 	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+		print('DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
 	end
 end
 
 function DotaPvP:PostLoadPrecache()
 	print('[RANDOM OMG] PostLoadPrecaching ...')
+	Say(nil, COLOR_RED..'PostLoadPrecaching ...', false)
+	Say(nil, COLOR_RED..'You can\'t enter the game until the precaching is finished!!!', false)
+	Say(nil, COLOR_RED..'Don\'t repick, you won\'t be able to enter the game faster.', false)
 	for _,heroName in pairs( self.heroList ) do
-		if not self.isPrecached[heroName] then
-			PrecacheUnitByNameAsync(heroName, function(...) end)
-			self.isPrecached[heroName] = true
-		end
+		PrecacheUnitByNameAsync(heroName, function(...) end)
 	end
 	print('[RANDOM OMG] Done postLoadPrecaching!')
 end
@@ -547,14 +552,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 end
 
 function DotaPvP:ChooseRandomHero()
-	local hero = self.heroList[math.random(1, #self.heroList)]
-	-- Precache the hero if needed	
-	if not self.isPrecached[hero] then
-		print('[RANDOM OMG] Precache', hero)
-		PrecacheUnitByNameAsync(hero, function(...) end)
-		self.isPrecached[hero] = true
-	end
-	return hero
+	return self.heroList[math.random(1, #self.heroList)]
 end
 
 function DotaPvP:GetRandomAbility(sort)
