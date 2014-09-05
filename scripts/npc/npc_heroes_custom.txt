@@ -1,192 +1,644 @@
-// Dota Heroes File
-// NOTE: This isn't for creating new heroes, this is for taking a currently existing hero as a template and overriding
-// the specified key-value combinations.  Use override_hero <hero_to_override> for this.
 "DOTAHeroes"
 {
-	//=================================================================================================================
-	// HERO: Abaddon
-	//=================================================================================================================
-	"npc_dota_hero_abaddon_omg"
+  "npc_dota_hero_ancient_apparition_romg"
 	{
-		"override_hero" "npc_dota_hero_abaddon"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_ancient_apparition"
 	}
-	
-	//=================================================================================================================
-	// HERO: Alchemist
-	//=================================================================================================================
-	"npc_dota_hero_alchemist_omg"
+
+  "npc_dota_hero_antimage_romg"
 	{
-		"override_hero" "npc_dota_hero_alchemist"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_antimage"
 	}
-	
-	//=================================================================================================================
-	// HERO: Ancient Apparition
-	//=================================================================================================================
-	"npc_dota_hero_ancient_apparition_omg"
+
+  "npc_dota_hero_axe_romg"
 	{
-		"override_hero" "npc_dota_hero_ancient_apparition"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_axe"
 	}
-	
-	//=================================================================================================================
-	// HERO: Anti-Mage
-	//=================================================================================================================
-	"npc_dota_hero_antimage_omg"
+
+  "npc_dota_hero_beastmaster_romg"
 	{
-		"override_hero" "npc_dota_hero_antimage"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_beastmaster"
 	}
-	
-	//=================================================================================================================
-	// HERO: Axe
-	//=================================================================================================================
-	"npc_dota_hero_axe_omg"
+
+  "npc_dota_hero_bloodseeker_romg"
 	{
-		"override_hero" "npc_dota_hero_axe"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_bloodseeker"
 	}
-	
-	//=================================================================================================================
-	// HERO: Bane
-	//=================================================================================================================
-	"npc_dota_hero_bane_omg"
+
+  "npc_dota_hero_chen_romg"
 	{
-		"override_hero" "npc_dota_hero_bane"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_chen"
 	}
-	
-	//=================================================================================================================
-	// HERO: Batrider
-	//=================================================================================================================
-	"npc_dota_hero_batrider_omg"
+
+  "npc_dota_hero_crystal_maiden_romg"
 	{
-		"override_hero" "npc_dota_hero_batrider"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_crystal_maiden"
 	}
-	
-	//=================================================================================================================
-	// HERO: Beastmaster
-	//=================================================================================================================
-	"npc_dota_hero_beastmaster_omg"
+
+  "npc_dota_hero_dark_seer_romg"
 	{
-		"override_hero" "npc_dota_hero_beastmaster"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_dark_seer"
 	}
-	
-	//=================================================================================================================
-	// HERO: Bloodseeker
-	//=================================================================================================================
-	"npc_dota_hero_bloodseeker_omg"
+
+  "npc_dota_hero_dazzle_romg"
 	{
-		"override_hero" "npc_dota_hero_bloodseeker"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_dazzle"
 	}
-	
-	//=================================================================================================================
-	// HERO: Bounty Hunter
-	//=================================================================================================================
-	"npc_dota_hero_bounty_hunter_omg"
+
+  "npc_dota_hero_dragon_knight_romg"
 	{
-		"override_hero" "npc_dota_hero_bounty_hunter"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_dragon_knight"
 	}
-	
-	//=================================================================================================================
-	// HERO: Brewmaster
-	//=================================================================================================================
-	"npc_dota_hero_brewmaster_omg"
+
+  "npc_dota_hero_doom_bringer_romg"
 	{
-		"override_hero" "npc_dota_hero_brewmaster"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_doom_bringer"
 	}
-	
-	//=================================================================================================================
-	// HERO: Bristleback
-	//=================================================================================================================
-	"npc_dota_hero_bristleback_omg"
+
+  "npc_dota_hero_drow_ranger_romg"
 	{
-		"override_hero" "npc_dota_hero_bristleback"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_drow_ranger"
 	}
-	
-	//=================================================================================================================
-	// HERO: Broodmother
-	//=================================================================================================================
-	"npc_dota_hero_broodmother_omg"
+
+  "npc_dota_hero_earthshaker_romg"
 	{
-		"override_hero" "npc_dota_hero_broodmother"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_earthshaker"
 	}
-	
-	//=================================================================================================================
-	// HERO: Centaur Warrunner
-	//=================================================================================================================
-	"npc_dota_hero_centaur_omg"
+
+  "npc_dota_hero_enchantress_romg"
 	{
-		"override_hero" "npc_dota_hero_centaur"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_enchantress"
 	}
-	
-	//=================================================================================================================
-	// HERO: Chaos Knight
-	//=================================================================================================================
-	"npc_dota_hero_chaos_knight_omg"
+
+  "npc_dota_hero_enigma_romg"
 	{
-		"override_hero" "npc_dota_hero_chaos_knight"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_enigma"
 	}
-	
-	//=================================================================================================================
-	// HERO: Chen
-	//=================================================================================================================
-	"npc_dota_hero_chen_omg"
+
+  "npc_dota_hero_faceless_void_romg"
 	{
-		"override_hero" "npc_dota_hero_chen"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_faceless_void"
 	}
-	
-	//=================================================================================================================
-	// HERO: Clinkz
-	//=================================================================================================================
-	"npc_dota_hero_clinkz_omg"
+
+  "npc_dota_hero_furion_romg"
 	{
-		"override_hero" "npc_dota_hero_clinkz"
-		// Abilities
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityLayout" "6"
-	}	
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_furion"
+	}
+
+  "npc_dota_hero_juggernaut_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_juggernaut"
+	}
+
+  "npc_dota_hero_kunkka_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_kunkka"
+	}
+
+  "npc_dota_hero_leshrac_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_leshrac"
+	}
+
+  "npc_dota_hero_lich_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_lich"
+	}
+
+  "npc_dota_hero_life_stealer_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_life_stealer"
+	}
+
+  "npc_dota_hero_lina_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_lina"
+	}
+
+  "npc_dota_hero_lion_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_lion"
+	}
+
+  "npc_dota_hero_mirana_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_mirana"
+	}
+
+  "npc_dota_hero_morphling_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_morphling"
+	}
+
+  "npc_dota_hero_necrolyte_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_necrolyte"
+	}
+
+  "npc_dota_hero_nevermore_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_nevermore"
+	}
+
+  "npc_dota_hero_night_stalker_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_night_stalker"
+	}
+
+  "npc_dota_hero_omniknight_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_omniknight"
+	}
+
+  "npc_dota_hero_puck_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_puck"
+	}
+
+  "npc_dota_hero_pudge_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_pudge"
+	}
+
+  "npc_dota_hero_pugna_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_pugna"
+	}
+
+  "npc_dota_hero_rattletrap_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_rattletrap"
+	}
+
+  "npc_dota_hero_razor_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_razor"
+	}
+
+  "npc_dota_hero_riki_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_riki"
+	}
+
+  "npc_dota_hero_sand_king_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_sand_king"
+	}
+
+  "npc_dota_hero_shadow_shaman_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_shadow_shaman"
+	}
+
+  "npc_dota_hero_slardar_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_slardar"
+	}
+
+  "npc_dota_hero_sniper_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_sniper"
+	}
+
+  "npc_dota_hero_spectre_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_spectre"
+	}
+
+  "npc_dota_hero_storm_spirit_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_storm_spirit"
+	}
+
+  "npc_dota_hero_sven_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_sven"
+	}
+
+  "npc_dota_hero_tidehunter_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_tidehunter"
+	}
+
+  "npc_dota_hero_tinker_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_tinker"
+	}
+
+  "npc_dota_hero_tiny_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_tiny"
+	}
+
+  "npc_dota_hero_vengefulspirit_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_vengefulspirit"
+	}
+
+  "npc_dota_hero_venomancer_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_venomancer"
+	}
+
+  "npc_dota_hero_viper_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_viper"
+	}
+
+  "npc_dota_hero_weaver_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_weaver"
+	}
+
+  "npc_dota_hero_windrunner_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_windrunner"
+	}
+
+  "npc_dota_hero_witch_doctor_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_witch_doctor"
+	}
+
+  "npc_dota_hero_zuus_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_zuus"
+	}
+
+  "npc_dota_hero_broodmother_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_broodmother"
+	}
+
+  "npc_dota_hero_skeleton_king_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_skeleton_king"
+	}
+
+  "npc_dota_hero_queenofpain_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_queenofpain"
+	}
+
+  "npc_dota_hero_huskar_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_huskar"
+	}
+
+  "npc_dota_hero_jakiro_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_jakiro"
+	}
+
+  "npc_dota_hero_batrider_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_batrider"
+	}
+
+  "npc_dota_hero_warlock_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_warlock"
+	}
+
+  "npc_dota_hero_alchemist_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_alchemist"
+	}
+
+  "npc_dota_hero_death_prophet_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_death_prophet"
+	}
+
+  "npc_dota_hero_ursa_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_ursa"
+	}
+
+  "npc_dota_hero_bounty_hunter_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_bounty_hunter"
+	}
+
+  "npc_dota_hero_silencer_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_silencer"
+	}
+
+  "npc_dota_hero_spirit_breaker_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_spirit_breaker"
+	}
+
+  "npc_dota_hero_invoker_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_invoker"
+	}
+  
+  "npc_dota_hero_clinkz_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_clinkz"
+	}
+
+  "npc_dota_hero_obsidian_destroyer_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_obsidian_destroyer"
+	}
+
+  "npc_dota_hero_shadow_demon_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_shadow_demon"
+	}
+
+  "npc_dota_hero_lycan_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_lycan"
+	}
+
+  "npc_dota_hero_lone_druid_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_lone_druid"
+	}
+
+  "npc_dota_hero_brewmaster_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_brewmaster"
+	}
+
+  "npc_dota_hero_phantom_lancer_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_phantom_lancer"
+	}
+
+  "npc_dota_hero_treant_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_treant"
+	}
+
+  "npc_dota_hero_ogre_magi_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_ogre_magi"
+	}
+
+  "npc_dota_hero_chaos_knight_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_chaos_knight"
+	}
+
+  "npc_dota_hero_phantom_assassin_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_phantom_assassin"
+	}
+
+  "npc_dota_hero_gyrocopter_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_gyrocopter"
+	}
+
+  "npc_dota_hero_rubick_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_rubick"
+	}
+
+  "npc_dota_hero_luna_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_luna"
+	}
+
+  "npc_dota_hero_wisp_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_wisp"
+	}
+
+  "npc_dota_hero_disruptor_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_disruptor"
+	}
+
+  "npc_dota_hero_undying_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_undying"
+	}
+
+  "npc_dota_hero_templar_assassin_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_templar_assassin"
+	}
+
+  "npc_dota_hero_naga_siren_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_naga_siren"
+	}
+
+  "npc_dota_hero_nyx_assassin_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_nyx_assassin"
+	}
+
+  "npc_dota_hero_keeper_of_the_light_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_keeper_of_the_light"
+	}
+
+  "npc_dota_hero_visage_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_visage"
+	}
+
+  "npc_dota_hero_meepo_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_meepo"
+	}
+
+  "npc_dota_hero_magnataur_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_magnataur"
+	}
+
+  "npc_dota_hero_centaur_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_centaur"
+	}
+
+  "npc_dota_hero_slark_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_slark"
+	}
+
+  "npc_dota_hero_shredder_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_shredder"
+	}
+
+  "npc_dota_hero_medusa_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_medusa"
+	}
+
+  "npc_dota_hero_troll_warlord_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_troll_warlord"
+	}
+
+  "npc_dota_hero_tusk_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_tusk"
+	}
+
+  "npc_dota_hero_bristleback_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_bristleback"
+	}
+
+  "npc_dota_hero_skywrath_mage_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_skywrath_mage"
+	}
+
+  "npc_dota_hero_elder_titan_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_elder_titan"
+	}
+
+  "npc_dota_hero_abaddon_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_abaddon"
+	}
+
+  "npc_dota_hero_earth_spirit_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_earth_spirit"
+	}
+
+  "npc_dota_hero_ember_spirit_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_ember_spirit"
+	}
+
+  "npc_dota_hero_legion_commander_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_legion_commander"
+	}
+
+  "npc_dota_hero_phoenix_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_phoenix"
+	}
+
+  "npc_dota_hero_techies_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_techies"
+	}
+
+	"npc_dota_hero_terrorblade_romg"
+	{
+		"AbilityLayout" 		"6"
+		"override_hero"			"npc_dota_hero_terrorblade"
+	}
 }

@@ -21,7 +21,7 @@ function Precache( context )
 	for sure in your game and that cannot or should not be precached asynchronously or
 	after the game loads.
 	]]
-	print('[RANDOM OMG] Precaching ...')
+	--[[print('[RANDOM OMG] Precaching ...')
 	-- looks like this isn't working
 	--PrecacheUnitByNameSync("npc_precache_everything", context)
 	PrecacheUnitByNameSync("npc_dota_hero_abaddon", context)
@@ -132,7 +132,7 @@ function Precache( context )
 	PrecacheUnitByNameSync("npc_dota_hero_witch_doctor", context)
 	PrecacheUnitByNameSync("npc_dota_hero_zuus", context)
 	PrecacheUnitByNameSync("npc_dota_hero_techies", context)
-	print('[RANDOM OMG] Done precaching!')
+	print('[RANDOM OMG] Done precaching!')]]
 end
 
 -- disable 'wtf-mode' by default
@@ -148,6 +148,7 @@ function DotaPvP:InitGameMode()
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled( true )
 	GameRules:SetSameHeroSelectionEnabled( true )
 	GameRules:SetHeroSelectionTime( 0.0 )
+	GameRules:SetPreGameTime( 180.0 )
 	GameRules:GetGameModeEntity():SetFixedRespawnTime( -1 )
 
 	-- Register Think
