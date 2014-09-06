@@ -109,6 +109,7 @@ function DotaPvP:GameThink()
 				print('[RANDOM OMG] Try to pick a hero for user:', playerID)
 				--CreateHeroForPlayer(self:ChooseRandomHero(),ply)
 				ply:MakeRandomHeroSelection()
+				PlayerResource:SetHasRepicked(playerID)
 				self.hasHero[playerID] = true
 				self.needHero[playerID] = false
 				print('[RANDOM OMG] Hero picked for user:', playerID)
@@ -251,7 +252,6 @@ function DotaPvP:PostLoadPrecache()
 	print('[RANDOM OMG] PostLoadPrecaching ...')
 	Say(nil, COLOR_RED..'PostLoadPrecaching ...', false)
 	Say(nil, COLOR_RED..'You can\'t enter the game until the precaching is finished!!!', false)
-	Say(nil, COLOR_RED..'Don\'t repick, you won\'t be able to enter the game faster.', false)
 	for _,heroName in pairs( self.heroList ) do
 		PrecacheUnitByNameAsync(heroName, function(...) end)
 	end
