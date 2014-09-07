@@ -364,6 +364,14 @@ function DotaPvP:ApplyBuild(hero, build)
 	if not PlayerResource:IsValidPlayerID(playerID) then
 		return
 	end
+	
+	-- Don't use the same ability twice
+	while build[1] == build[2] do
+		 build[2] = self:GetRandomAbility()
+	end
+	while (build[1] == build[3]) or (build[2] == build[3]) do
+		 build[3] = self:GetRandomAbility()
+	end
 
 	-- Remove all the skills from our hero
 	self:RemoveAllSkills(hero)
