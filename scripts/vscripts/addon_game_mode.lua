@@ -65,6 +65,7 @@ function DotaPvP:InitGameMode()
 	-- Register Think
 	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
 	GameMode:SetContextThink( "DotaPvP:RespawnThink", function() return self:RespawnThink() end, 1 )
+	GameMode:SetContextThink( "DotaPvP:AdviceThink", function() return self:AdviceThink() end, 60 )
 
 	-- Register Game Events
 	ListenToGameEvent('player_connect_full', Dynamic_Wrap(DotaPvP, 'OnConnectFull'), self)
@@ -131,6 +132,11 @@ function DotaPvP:RespawnThink()
 		end
 	end
 	return 0.25
+end
+
+function DotaPvP:AdviceThink()
+	Say(nil, COLOR_DYELLOW..'Hint: If you die and had an item in the courier don\'t take it directly from the courier!!! Drop it to the ground and take it from there.', false)
+	return 150
 end
 
 function DotaPvP:LoadAbilityList()
