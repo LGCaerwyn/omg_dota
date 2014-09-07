@@ -337,23 +337,10 @@ function DotaPvP:OnEntityKilled(keys)
 	if killedUnit and killedUnit:IsRealHero() then
 		local playerID = killedUnit:GetPlayerOwnerID()
 
-		-- reincarnation workaround
-		local reincarnation = killedUnit:FindAbilityByName('skeleton_king_reincarnation')
-		if reincarnation ~= nil then
-			local reincarnationCooldown = -1
-			if reincarnation:GetLevel() == 0 then
-				-- do nothing
-			elseif reincarnation:GetLevel() == 3 then
-				reincarnationCooldown = reincarnation:GetCooldown(reincarnation:GetLevel())
-			else
-				reincarnationCooldown = reincarnation:GetCooldown(reincarnation:GetLevel()-1)
-			end
-			if reincarnationCooldown > 0 and (reincarnationCooldown -2) <= reincarnation:GetCooldownTimeRemaining() then
-				self.noChange[playerID] = true
-			end
-		end
-
-		if not self.noChange[playerID] then
+		-- no new hero if reincarnating
+		if killedUnit:IsReincarnating() then
+			self.noChange[playerID] = true
+		else 
 			self.needHero[playerID] = true
 		end
 
