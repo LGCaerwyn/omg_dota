@@ -99,6 +99,8 @@ function DotaPvP:InitGameMode()
 	self.respawnHero = {}
 	
 	self.hasCourier = {}
+	
+	self.noChange = {}
 
 	print( "Random OMG loaded." )
 end
@@ -284,29 +286,33 @@ function DotaPvP:OnNPCSpawned(keys)
 	if unit and unit:IsRealHero() then
 		local playerID = unit:GetPlayerOwnerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
-			if not self.hasCourier[unit:GetTeamNumber()] then
-				self.hasCourier[unit:GetTeamNumber()] = true
-				unit:AddItem(CreateItem('item_courier', unit, unit))
-				for i = 0,5 do
-					local item = unit:GetItemInSlot(i)
-					if item:GetName() == 'item_courier' then
-						item:CastAbility()
-						break
+			if not self.noChange[playerID] then
+				if not self.hasCourier[unit:GetTeamNumber()] then
+					self.hasCourier[unit:GetTeamNumber()] = true
+					unit:AddItem(CreateItem('item_courier', unit, unit))
+					for i = 0,5 do
+						local item = unit:GetItemInSlot(i)
+						if item:GetName() == 'item_courier' then
+							item:CastAbility()
+							break
+						end
 					end
 				end
-			end
-			if self.needHero[playerID] then
-				self.needHero[playerID] = false
-				self.respawnHero[playerID] = unit
+				if self.needHero[playerID] then
+					self.needHero[playerID] = false
+					self.respawnHero[playerID] = unit
+				else
+					-- Change skills
+					self:ApplyBuild(unit, {
+						[1] = self:GetRandomAbility(),
+						[2] = self:GetRandomAbility(),
+						[3] = self:GetRandomAbility(),
+						[4] = self:GetRandomAbility('Ults')
+					})
+					unit:SetAbilityPoints(unit:GetLevel())
+				end
 			else
-				-- Change skills
-				self:ApplyBuild(unit, {
-					[1] = self:GetRandomAbility(),
-					[2] = self:GetRandomAbility(),
-					[3] = self:GetRandomAbility(),
-					[4] = self:GetRandomAbility('Ults')
-				})
-				unit:SetAbilityPoints(unit:GetLevel())
+				self.noChange[playerID] = false
 			end
 		end
 	end
@@ -327,11 +333,30 @@ function DotaPvP:OnEntityKilled(keys)
 	if keys.entindex_attacker ~= nil then
 		killerEntity = EntIndexToHScript( keys.entindex_attacker )
 	end
-	
+
 	if killedUnit and killedUnit:IsRealHero() then
 		local playerID = killedUnit:GetPlayerOwnerID()
-		self.needHero[playerID] = true
-		
+
+		-- reincarnation workaround
+		local reincarnation = killedUnit:FindAbilityByName('skeleton_king_reincarnation')
+		if reincarnation ~= nil then
+			local reincarnationCooldown = -1
+			if reincarnation:GetLevel() == 0 then
+				-- do nothing
+			elseif reincarnation:GetLevel() == 3 then
+				reincarnationCooldown = reincarnation:GetCooldown(reincarnation:GetLevel())
+			else
+				reincarnationCooldown = reincarnation:GetCooldown(reincarnation:GetLevel()-1)
+			end
+			if reincarnationCooldown > 0 and (reincarnationCooldown -2) <= reincarnation:GetCooldownTimeRemaining() then
+				self.noChange[playerID] = true
+			end
+		end
+
+		if not self.noChange[playerID] then
+			self.needHero[playerID] = true
+		end
+
 		--TODO Check how to enable 'fast respawn'
 		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
 		--killedUnit:SetTimeUntilRespawn(killedUnit:GetTimeUntilRespawn()/2)
