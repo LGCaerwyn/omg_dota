@@ -21,6 +21,7 @@ function Precache( context )
 	for sure in your game and that cannot or should not be precached asynchronously or
 	after the game loads.
 	]]
+	--[[
 	print('[RANDOM OMG] Precaching ...')
 	local wearables = LoadKeyValues("scripts/items/items_game.txt")
 	
@@ -43,6 +44,7 @@ function Precache( context )
 		PrecacheResource( "model", wearable, context )
 	end
 	print('[RANDOM OMG] Done precaching!')
+	]]
 end
 
 -- disable 'wtf-mode' by default
