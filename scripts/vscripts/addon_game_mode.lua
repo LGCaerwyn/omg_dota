@@ -448,6 +448,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 					purchaseTime = item:GetPurchaseTime(),
 					currentCharges = item:GetCurrentCharges(),
 					StacksWithOtherOwners = item:StacksWithOtherOwners(),
+					cooldown = item:GetCooldownTimeRemaining(),
 					sort = item:GetAbilityName()
 				}
 
@@ -471,6 +472,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 					it:SetPurchaseTime(item.purchaseTime)
 					it:SetCurrentCharges(item.currentCharges)
 					it:SetStacksWithOtherOwners(item.StacksWithOtherOwners)
+					it:StartCooldown(item.cooldown)
 					newHero:AddItem(it)
 				else
 					local it = CreateItem('item_blink', newHero, newHero)
