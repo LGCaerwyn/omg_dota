@@ -67,7 +67,6 @@ function DotaPvP:InitGameMode()
 	-- Register Think
 	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
 	GameMode:SetContextThink( "DotaPvP:RespawnThink", function() return self:RespawnThink() end, 1 )
-	GameMode:SetContextThink( "DotaPvP:AdviceThink", function() return self:AdviceThink() end, 60 )
 
 	-- Register Game Events
 	ListenToGameEvent('player_connect_full', Dynamic_Wrap(DotaPvP, 'OnConnectFull'), self)
@@ -136,11 +135,6 @@ function DotaPvP:RespawnThink()
 		end
 	end
 	return 0.25
-end
-
-function DotaPvP:AdviceThink()
-	Say(nil, COLOR_DYELLOW..'Hint: If you die and had an item in the courier don\'t take it directly from the courier!!! Drop it to the ground and take it from there.', false)
-	return 150
 end
 
 function DotaPvP:LoadAbilityList()
@@ -457,11 +451,36 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 			end
 		end
 
+		-- Change the owner of the items owned by the hero to the player
+		local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
+		if courier ~= nil then
+			for i=0, 5 do
+				local item = courier:GetItemInSlot(i)
+				if item ~= nil then
+					if item:GetPurchaser() == hero then
+						item:SetPurchaser(ply)
+					end
+				end
+			end
+		end
+
 		-- Replace the hero
 		local newHero = PlayerResource:ReplaceHeroWith(playerID, newHeroName, gold, exp)
 
 		-- Validate new hero
 		if newHero then
+			-- Change the owner of the items back to the new hero
+			local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
+			if courier ~= nil then
+				for i=0, 5 do
+					local item = courier:GetItemInSlot(i)
+					if item ~= nil then
+						if item:GetPurchaser() == ply then
+							item:SetPurchaser(newHero)
+						end
+					end
+				end
+			end
 			local blockers = {}
 			-- Give items
 			for i=0, 11 do
