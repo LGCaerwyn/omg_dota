@@ -401,6 +401,13 @@ function DotaPvP:ApplyBuild(hero, build)
 		i = i + 1
 	end
 
+	-- Remove all modifier
+	if hero:GetModifierCount() > 0 then
+		for i = 0, (hero:GetModifierCount() - 1) do
+			hero:RemoveModifierByName(hero:GetModifierNameByIndex(i))
+		end
+	end
+
 	-- Add skill 'attribute_bonus'
 	hero:AddAbility('attribute_bonus')
 
