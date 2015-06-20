@@ -101,7 +101,7 @@ function DotaPvP:InitGameMode()
 	
 	self.noChange = {}
 
-	print( "Random OMG loaded." )
+	print('[RANDOM OMG] Random OMG loaded.')
 end
 
 --------------------------------------------------------------------------------
@@ -111,7 +111,6 @@ function DotaPvP:GameThink()
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if not self.hasHero[playerID] then
 				print('[RANDOM OMG] Try to pick a hero for user:', playerID)
-				--CreateHeroForPlayer(self:ChooseRandomHero(),ply)
 				ply:MakeRandomHeroSelection()
 				PlayerResource:SetHasRepicked(playerID)
 				self.hasHero[playerID] = true
@@ -234,21 +233,23 @@ end
 function DotaPvP:OnGameRulesStateChange(keys)
 	local newState = GameRules:State_Get()
 	if newState == DOTA_GAMERULES_STATE_INIT then
-		print('DOTA_GAMERULES_STATE_INIT')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_INIT')
+		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
-		print('DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
 		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
-		print('DOTA_GAMERULES_STATE_HERO_SELECTION')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_HERO_SELECTION')
+		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME then
-		print('DOTA_GAMERULES_STATE_STRATEGY_TIME')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_STRATEGY_TIME')
 	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
-		print('DOTA_GAMERULES_STATE_PRE_GAME')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_PRE_GAME')
 		if precache then
 			self:PostLoadPrecache()
 		end
 	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		print('DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
+		print('[RANDOM OMG] DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
 	end
 end
 
@@ -287,7 +288,8 @@ function DotaPvP:OnNPCSpawned(keys)
 					for i = 0,5 do
 						local item = unit:GetItemInSlot(i)
 						if item:GetName() == 'item_courier' then
-							item:CastAbility()
+							-- TODO: doesn't work any more
+							--item:CastAbility()
 							break
 						end
 					end
@@ -338,10 +340,8 @@ function DotaPvP:OnEntityKilled(keys)
 			self.needHero[playerID] = true
 		end
 
-		--TODO Check how to enable 'fast respawn'
-		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
-		--killedUnit:SetTimeUntilRespawn(killedUnit:GetTimeUntilRespawn()/2)
-		--print('GetTimeUntilRespawn()', killedUnit:GetTimeUntilRespawn())
+		--Uncomment to enable 'fast respawn'
+		--killedUnit:SetTimeUntilRespawn(killedUnit:GetRespawnTime()/2)
 	end
 end
 
@@ -412,7 +412,7 @@ function DotaPvP:ApplyBuild(hero, build)
 	hero:AddAbility('attribute_bonus')
 
 	-- print all abilities
-	--[[print('Hero:', hero:GetUnitName())
+	--[[print('[RANDOM OMG] Hero:', hero:GetUnitName())
 	for index = 0, 16 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
@@ -425,7 +425,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 	local playerID = hero:GetPlayerOwnerID()
 	local ply = PlayerResource:GetPlayer(playerID)
 	if not PlayerResource:IsValidPlayerID(playerID) then
-		print('Invalid playerID')
+		print('[RANDOM OMG] Invalid playerID')
 		return nil
 	end
 	if ply then
@@ -476,6 +476,9 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 
 		-- Validate new hero
 		if newHero then
+			-- Set XP, because in ReplaceHeroWith it doesn't work
+			newHero:AddExperience (exp, 0, false, false)
+			
 			-- Change the owner of the items back to the new hero
 			local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
 			if courier ~= nil then
@@ -532,7 +535,7 @@ function DotaPvP:GetRandomAbility(sort)
 end
 
 function DotaPvP:RemoveAllSkills(hero)
-	for index = 0, 16 do
+	for index = 0, 15 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
 			hero:RemoveAbility(abilityName)
@@ -548,7 +551,7 @@ function DotaPvP:RefreshAllSkills(hero)
 	-- Refresh mana
 	hero:GiveMana(99999)
 	-- Refresh all skills
-	for index = 0, 16 do
+	for index = 0, 15 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			hero:GetAbilityByIndex(index):EndCooldown()
 		end
