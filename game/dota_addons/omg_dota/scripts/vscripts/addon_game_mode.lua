@@ -1,82 +1,56 @@
 --[[
-Dota PvP game mode
+DotA OMG game mode
 ]]
-require( "util" )
 
-if DotaPvP == nil then
-	DotaPvP = class({})
+if DotAOMG == nil then
+	DotAOMG = class({})
 end
 
 --------------------------------------------------------------------------------
 -- ACTIVATE
 --------------------------------------------------------------------------------
 function Activate()
-	GameRules.DotaPvP = DotaPvP()
-	GameRules.DotaPvP:InitGameMode()
+	GameRules.DotAOMG = DotAOMG()
+	GameRules.DotAOMG:InitGameMode()
 end
 
 function Precache( context )
 	--[[
-	This function is used to precache resources/units/items/abilities that will be needed
-	for sure in your game and that cannot or should not be precached asynchronously or
-	after the game loads.
-	]]
-	--[[
-	print('[RANDOM OMG] Precaching ...')
-	local wearables = LoadKeyValues("scripts/items/items_game.txt")
-	
-	local wearablesList = {}
-	local precacheWearables = {}
-	for k, v in pairs(wearables) do
-		if k == 'items' then
-			wearablesList = v
-		end
-	end
-	
-	for k, v in pairs(wearablesList) do
-		for key, value in pairs(wearablesList[k]) do
-			if key == 'model_player' then
-				precacheWearables[value] = true
-			end
-		end
-	end
-	for wearable,_ in pairs( precacheWearables ) do
-		PrecacheResource( "model", wearable, context )
-	end
-	print('[RANDOM OMG] Done precaching!')
+		Precache things we know we'll use.  Possible file types include (but not limited to):
+			PrecacheResource( "model", "*.vmdl", context )
+			PrecacheResource( "soundfile", "*.vsndevts", context )
+			PrecacheResource( "particle", "*.vpcf", context )
+			PrecacheResource( "particle_folder", "particles/folder", context )
 	]]
 end
-
--- disable 'wtf-mode' by default
-local wtf_mode = 0
-local precache = false
 
 --------------------------------------------------------------------------------
 -- INIT
 --------------------------------------------------------------------------------
-function DotaPvP:InitGameMode()
+function DotAOMG:InitGameMode()
 	local GameMode = GameRules:GetGameModeEntity()
 
 	-- Enable the standard Dota PvP game rules
+	GameRules:SetCustomGameSetupTimeout( 30.0 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled( true )
 	GameRules:SetSameHeroSelectionEnabled( true )
-	GameRules:SetHeroSelectionTime( 0.0 )
-	GameRules:SetPreGameTime( 180.0 )
+	GameRules:SetHeroSelectionTime( 5.0 )
+	GameRules:SetStrategyTime( 10.0 )
+	GameRules:SetPreGameTime( 60.0 )
 	GameRules:GetGameModeEntity():SetFixedRespawnTime( -1 )
+	GameRules:SetUseUniversalShopMode( true )
+	--GameRules:SetGoldTickTime( 1.0 )
+	GameRules:SetGoldPerTick( 3 )
 
 	-- Register Think
-	GameMode:SetContextThink( "DotaPvP:GameThink", function() return self:GameThink() end, 0.25 )
-	GameMode:SetContextThink( "DotaPvP:RespawnThink", function() return self:RespawnThink() end, 1 )
+	GameMode:SetContextThink( "DotAOMG:RespawnThink", function() return self:RespawnThink() end, 0.25 )
 
 	-- Register Game Events
-	ListenToGameEvent('player_connect_full', Dynamic_Wrap(DotaPvP, 'OnConnectFull'), self)
-	ListenToGameEvent('npc_spawned', Dynamic_Wrap(DotaPvP, 'OnNPCSpawned'), self)
-	ListenToGameEvent('entity_killed', Dynamic_Wrap(DotaPvP, 'OnEntityKilled'), self)
-	ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(DotaPvP, 'OnAbilityUsed'), self)
-	ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(DotaPvP, 'OnGameRulesStateChange'), self)
-
-	-- Register Commands
-	Convars:RegisterCommand( "wtf", Dynamic_Wrap(DotaPvP, 'ToggleWTFMode'), "A console command to toggle the wtf mode", 0 )
+	ListenToGameEvent('player_connect_full', Dynamic_Wrap(DotAOMG, 'OnConnectFull'), self)
+	ListenToGameEvent('npc_spawned', Dynamic_Wrap(DotAOMG, 'OnNPCSpawned'), self)
+	ListenToGameEvent('entity_killed', Dynamic_Wrap(DotAOMG, 'OnEntityKilled'), self)
+	ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(DotAOMG, 'OnGameRulesStateChange'), self)
+	ListenToGameEvent('dota_player_learned_ability', Dynamic_Wrap(DotAOMG, 'OnPlayerLearnedAbility'), self)
 
 	-- userID map
 	self.vUserIDMap = {}
@@ -89,40 +63,28 @@ function DotaPvP:InitGameMode()
 	-- Load ability List
 	self:LoadAbilityList()
 
-	-- list of players with heroes
-	self.hasHero = {}
-
 	-- list of players who need a new hero
 	self.needHero = {}
 	
 	self.respawnHero = {}
-	
-	self.hasCourier = {}
 	
 	self.noChange = {}
 
 	print('[RANDOM OMG] Random OMG loaded.')
 end
 
---------------------------------------------------------------------------------
-function DotaPvP:GameThink()
-	for _,ply in pairs( self.vUserIDMap ) do
-		local playerID = ply:GetPlayerID()
-		if PlayerResource:IsValidPlayerID(playerID) then
-			if not self.hasHero[playerID] then
-				print('[RANDOM OMG] Try to pick a hero for user:', playerID)
-				ply:MakeRandomHeroSelection()
-				PlayerResource:SetHasRepicked(playerID)
-				self.hasHero[playerID] = true
-				self.needHero[playerID] = false
-				print('[RANDOM OMG] Hero picked for user:', playerID)
-			end
-		end
+function DotAOMG:RandomHeroPick ()
+	print('[RANDOM OMG] RandomHeroPick')
+	for nPlayerID = 0, DOTA_MAX_PLAYERS-1 do
+		if PlayerResource:IsValidPlayer(nPlayerID) then
+			--PlayerResource:SetHasRepicked(nPlayerID)
+			local player = PlayerResource:GetPlayer(nPlayerID)
+			player:MakeRandomHeroSelection()
+        end
 	end
-	return 0.25
-end
+ end
 
-function DotaPvP:RespawnThink()
+function DotAOMG:RespawnThink()
 	for playerID,hero in pairs( self.respawnHero ) do
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if IsValidEntity(hero) then
@@ -136,7 +98,7 @@ function DotaPvP:RespawnThink()
 	return 0.25
 end
 
-function DotaPvP:LoadAbilityList()
+function DotAOMG:LoadAbilityList()
 	local abs = LoadKeyValues("scripts/kv/abilities.kv")
 	self.heroListKV = LoadKeyValues("scripts/npc/npc_heroes.txt")
 	self.subAbilities = LoadKeyValues("scripts/kv/abilityDeps.kv")
@@ -191,7 +153,7 @@ function DotaPvP:LoadAbilityList()
 	end
 end
 
-function DotaPvP:FindHeroOwner(skillName)
+function DotAOMG:FindHeroOwner(skillName)
 	local heroOwner = ""
 	for heroName, values in pairs(self.heroListKV) do
 		if type(values) == "table" then
@@ -208,62 +170,37 @@ function DotaPvP:FindHeroOwner(skillName)
 	return heroOwner
 end
 
--- This is an example console command
-function DotaPvP:ToggleWTFMode()
-	local cmdPlayer = Convars:GetCommandClient()
-	if cmdPlayer then
-		local playerID = cmdPlayer:GetPlayerID()
-		if playerID ~= nil and playerID ~= -1 then
-			if GameRules:GetGameTime() > 60 then
-				Say(nil, COLOR_RED..'You can modify wtf-mode only in the first 60 seconds.', false)
-			else
-				if wtf_mode == 0 then
-					wtf_mode = 1
-					Say(nil, COLOR_BLUE..'WTF enabled!!!', false)
-				else	
-					wtf_mode = 0
-					Say(nil, COLOR_BLUE..'WTF disabled!!!', false)
-				end
-			end
-		end
-	end
-end
-
 -- The overall game state has changed
-function DotaPvP:OnGameRulesStateChange(keys)
+function DotAOMG:OnGameRulesStateChange(keys)
 	local newState = GameRules:State_Get()
 	if newState == DOTA_GAMERULES_STATE_INIT then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_INIT')
-		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD')
-		precache = true
 	elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_HERO_SELECTION')
-		precache = true
+		self:RandomHeroPick()
 	elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_STRATEGY_TIME')
 	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_PRE_GAME')
-		if precache then
-			self:PostLoadPrecache()
-		end
+		self:PostLoadPrecache()
 	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
 	end
 end
 
-function DotaPvP:PostLoadPrecache()
+function DotAOMG:PostLoadPrecache()
 	print('[RANDOM OMG] PostLoadPrecaching ...')
-	Say(nil, COLOR_RED..'PostLoadPrecaching ...', false)
-	Say(nil, COLOR_RED..'You can\'t enter the game until the precaching is finished!!!', false)
+	Say(nil, 'PostLoadPrecaching ...', false)
+	Say(nil, 'You can\'t enter the game until the precaching is finished!!!', false)
 	for _,heroName in pairs( self.heroList ) do
-		PrecacheUnitByNameAsync(heroName, function(...) end)
+		print('[RANDOM OMG] Precaching Hero: ', heroName)
+		PrecacheUnitByNameAsync(heroName, function(unit) end)
 	end
-	print('[RANDOM OMG] Done postLoadPrecaching!')
 end
 
-function DotaPvP:OnConnectFull(keys)
+function DotAOMG:OnConnectFull(keys)
 	-- Grab the entity index of this player
 	local entIndex = keys.index+1
 	local ply = EntIndexToHScript(entIndex)
@@ -273,38 +210,25 @@ function DotaPvP:OnConnectFull(keys)
 	-- Store into our map
 	self.vUserIDMap[keys.userid] = ply
 	self.nLowestUserID = self.nLowestUserID + 1
+	
+	-- Init player
+	self.needHero[playerID] = false
+	self.noChange[playerID] = false
 end
 
-function DotaPvP:OnNPCSpawned(keys)
+function DotAOMG:OnNPCSpawned(keys)
 	local unit = EntIndexToHScript( keys.entindex )
 
 	if unit and unit:IsRealHero() then
 		local playerID = unit:GetPlayerOwnerID()
 		if PlayerResource:IsValidPlayerID(playerID) then
 			if not self.noChange[playerID] then
-				if not self.hasCourier[unit:GetTeamNumber()] then
-					self.hasCourier[unit:GetTeamNumber()] = true
-					unit:AddItem(CreateItem('item_courier', unit, unit))
-					for i = 0,5 do
-						local item = unit:GetItemInSlot(i)
-						if item:GetName() == 'item_courier' then
-							-- TODO: doesn't work any more
-							--item:CastAbility()
-							break
-						end
-					end
-				end
 				if self.needHero[playerID] then
 					self.needHero[playerID] = false
 					self.respawnHero[playerID] = unit
 				else
 					-- Change skills
-					self:ApplyBuild(unit, {
-						[1] = self:GetRandomAbility(),
-						[2] = self:GetRandomAbility(),
-						[3] = self:GetRandomAbility(),
-						[4] = self:GetRandomAbility('Ults')
-					})
+					self:ApplyBuild(unit)
 					unit:SetAbilityPoints(unit:GetLevel())
 				end
 			else
@@ -314,21 +238,8 @@ function DotaPvP:OnNPCSpawned(keys)
 	end
 end
 
-function DotaPvP:OnAbilityUsed(keys)
-	if wtf_mode == 1 then
-		for _,ply in pairs( self.vUserIDMap ) do
-			DotaPvP:RefreshAllSkills(ply:GetAssignedHero())
-		end
-	end
-end
-
-function DotaPvP:OnEntityKilled(keys)
+function DotAOMG:OnEntityKilled(keys)
 	local killedUnit = EntIndexToHScript( keys.entindex_killed )
-	local killerEntity = nil
-
-	if keys.entindex_attacker ~= nil then
-		killerEntity = EntIndexToHScript( keys.entindex_attacker )
-	end
 
 	if killedUnit and killedUnit:IsRealHero() then
 		local playerID = killedUnit:GetPlayerOwnerID()
@@ -340,17 +251,15 @@ function DotaPvP:OnEntityKilled(keys)
 			self.needHero[playerID] = true
 		end
 
-		--Uncomment to enable 'fast respawn'
-		--killedUnit:SetTimeUntilRespawn(killedUnit:GetRespawnTime()/2)
+		-- fast respawn
+		killedUnit:SetTimeUntilRespawn(killedUnit:GetRespawnTime()/4)
 	end
 end
 
-function DotaPvP:ApplyBuild(hero, build)
+function DotAOMG:ApplyBuild(hero)
 	if hero == nil then
-		if build == nil then
-			Say(nil, COLOR_RED..'WARNING: Failed to apply a build!', false)
-			return
-		end
+		Say(nil, 'WARNING: Failed to apply a build!', false)
+		return
 	end
 
 	-- Grab playerID
@@ -358,70 +267,91 @@ function DotaPvP:ApplyBuild(hero, build)
 	if not PlayerResource:IsValidPlayerID(playerID) then
 		return
 	end
+
+	-- Remove all modifier
+	if hero:GetModifierCount() > 0 then
+		for i = 0, (hero:GetModifierCount() - 1) do
+			print('[RANDOM OMG] Remove modifier:', hero:GetModifierNameByIndex(i))
+			hero:RemoveModifierByName(hero:GetModifierNameByIndex(i))
+		end
+	end
+	
+	local build = {}
+	build[1] = self:GetRandomAbility()
+	build[2] = self:GetRandomAbility()
+	build[3] = self:GetRandomAbility()
 	
 	-- Don't use the same ability twice
-	while build[1] == build[2] do
+	while build[1] == build[2] or self.subAbilities[build[2]] do
 		 build[2] = self:GetRandomAbility()
 	end
-	while (build[1] == build[3]) or (build[2] == build[3]) do
+	while (build[1] == build[3]) or (build[2] == build[3]) or self.subAbilities[build[3]] do
 		 build[3] = self:GetRandomAbility()
 	end
 
 	-- Remove all the skills from our hero
 	self:RemoveAllSkills(hero)
 
-	-- Table to store all the extra skills we need to give
-	local extraSkills = {}
-
 	-- Give all the abilities in this build
 	for k,v in ipairs(build) do
-		-- Check if this skill has sub abilities
-		if self.subAbilities[v] then
-			-- Store that we need this skill
-			extraSkills[self.subAbilities[v]] = true
-			-- TODO: Check if there is a better way to do this
-			-- Check if this skill has sub abilities too
-			if self.subAbilities[self.subAbilities[v]] then
-				-- Store that we need this skill
-				extraSkills[self.subAbilities[self.subAbilities[v]]] = true
-			end
-		end
-
 		-- Add to build
 		hero:AddAbility(v)
-	end
 
-	-- Add missing abilities
-	local i = #build+1
-	for k,v in pairs(extraSkills) do
-		-- Add the ability
-		hero:AddAbility(k)
-
-		-- Move onto the next slot
-		i = i + 1
-	end
-
-	-- Remove all modifier
-	if hero:GetModifierCount() > 0 then
-		for i = 0, (hero:GetModifierCount() - 1) do
-			hero:RemoveModifierByName(hero:GetModifierNameByIndex(i))
+		-- Check if this skill has sub abilities
+		local subAbility = self.subAbilities[v]
+		if subAbility then
+			hero:AddAbility(subAbility)
+			-- Check if this skill has sub abilities too
+			if self.subAbilities[subAbility] then
+				hero:AddAbility(self.subAbilities[subAbility])
+			end
 		end
 	end
 
-	-- Add skill 'attribute_bonus'
-	hero:AddAbility('attribute_bonus')
+	-- Add Dummy abilities
+	for index = 0, 3 do
+		if hero:GetAbilityByIndex(index) == nil then
+			hero:AddAbility('generic_hidden')
+		end
+	end
+
+	-- Add Ulti
+	local ult = self:GetRandomAbility('Ults')
+	-- Add spell dependencies
+	if self.subAbilities[ult] then
+		hero:AddAbility(self.subAbilities[ult])
+	else
+		hero:AddAbility('generic_hidden')
+	end
+	hero:AddAbility(ult)
+
+	hero:AddAbility('generic_hidden')
+	hero:AddAbility('generic_hidden')
+	hero:AddAbility('generic_hidden')
+
+	-- Add talents
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_movement_speed_20')
 
 	-- print all abilities
-	--[[print('[RANDOM OMG] Hero:', hero:GetUnitName())
-	for index = 0, 16 do
+
+	print('[RANDOM OMG] Hero: ', hero:GetUnitName())
+	for index = 0, 22 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
-			print(abilityName)
+			print('[RANDOM OMG] ', index)
+			print('[RANDOM OMG] ', abilityName)
 		end
-	end]]
+	end
 end
 
-function DotaPvP:ChangeHero(hero, newHeroName)
+function DotAOMG:ChangeHero(hero, newHeroName)
 	local playerID = hero:GetPlayerOwnerID()
 	local ply = PlayerResource:GetPlayer(playerID)
 	if not PlayerResource:IsValidPlayerID(playerID) then
@@ -434,7 +364,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 		local gold = hero:GetGold()
 
 		local slots = {}
-		for i=0, 11 do
+		for i=0, 15 do
 			local item = hero:GetItemInSlot(i)
 			if item then
 				-- Workout purchaser
@@ -478,7 +408,13 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 		if newHero then
 			-- Set XP, because in ReplaceHeroWith it doesn't work
 			newHero:AddExperience (exp, 0, false, false)
-			
+
+			-- Remove TP
+			local item = newHero:GetItemInSlot(15)
+			if item then
+				newHero:RemoveItem(item)
+			end
+
 			-- Change the owner of the items back to the new hero
 			local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
 			if courier ~= nil then
@@ -493,7 +429,7 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 			end
 			local blockers = {}
 			-- Give items
-			for i=0, 11 do
+			for i=0, 15 do
 				local item = slots[i]
 				if item then
 					local p = (item.purchaser == -1 and newHero) or item.purchaser
@@ -522,11 +458,11 @@ function DotaPvP:ChangeHero(hero, newHeroName)
 	end
 end
 
-function DotaPvP:ChooseRandomHero()
+function DotAOMG:ChooseRandomHero()
 	return self.heroList[math.random(1, #self.heroList)]
 end
 
-function DotaPvP:GetRandomAbility(sort)
+function DotAOMG:GetRandomAbility(sort)
 	if not sort or not self.vAbListSort[sort] then
 		sort = 'Abs'
 	end
@@ -534,8 +470,8 @@ function DotaPvP:GetRandomAbility(sort)
 	return self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
 end
 
-function DotaPvP:RemoveAllSkills(hero)
-	for index = 0, 15 do
+function DotAOMG:RemoveAllSkills(hero)
+	for index = 0, 23 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
 			hero:RemoveAbility(abilityName)
@@ -543,17 +479,18 @@ function DotaPvP:RemoveAllSkills(hero)
 	end
 end
 
-function DotaPvP:RefreshAllSkills(hero)
-	if hero == nil then
-		return
-	end
-
-	-- Refresh mana
-	hero:GiveMana(99999)
-	-- Refresh all skills
-	for index = 0, 15 do
-		if hero:GetAbilityByIndex(index) ~= nil then
-			hero:GetAbilityByIndex(index):EndCooldown()
+function DotAOMG:OnPlayerLearnedAbility(keys)
+	if keys.abilityname == 'special_bonus_movement_speed_20' then
+		print('[RANDOM OMG] ', keys.abilityname)
+		if not PlayerResource:IsValidPlayerID(keys.player - 1) then
+			return
+		end
+		local player = PlayerResource:GetPlayer(keys.player - 1)
+		local hero = player:GetAssignedHero()
+		if hero or hero:IsRealHero() then
+			print('[RANDOM OMG] BaseMoveSpeed', hero:GetBaseMoveSpeed())
+			hero:SetBaseMoveSpeed(hero:GetBaseMoveSpeed() + 20)
+			print('[RANDOM OMG] Hero modified')
 		end
 	end
 end
