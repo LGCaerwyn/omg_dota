@@ -40,7 +40,7 @@ function DotAOMG:InitGameMode()
 	GameRules:GetGameModeEntity():SetFixedRespawnTime( -1 )
 	GameRules:SetUseUniversalShopMode( true )
 	--GameRules:SetGoldTickTime( 1.0 )
-	GameRules:SetGoldPerTick( 3 )
+	GameRules:SetGoldPerTick( 4 )
 
 	-- Register Think
 	GameMode:SetContextThink( "DotAOMG:RespawnThink", function() return self:RespawnThink() end, 0.25 )
@@ -157,7 +157,7 @@ function DotAOMG:FindHeroOwner(skillName)
 	local heroOwner = ""
 	for heroName, values in pairs(self.heroListKV) do
 		if type(values) == "table" then
-			for i = 1, 16 do
+			for i = 1, 24 do
 				if values["Ability"..i] == skillName then
 					heroOwner = heroName
 					goto foundHeroName
@@ -296,23 +296,13 @@ function DotAOMG:ApplyBuild(hero)
 	for k,v in ipairs(build) do
 		-- Add to build
 		hero:AddAbility(v)
-
-		-- Check if this skill has sub abilities
-		local subAbility = self.subAbilities[v]
-		if subAbility then
-			hero:AddAbility(subAbility)
-			-- Check if this skill has sub abilities too
-			if self.subAbilities[subAbility] then
-				hero:AddAbility(self.subAbilities[subAbility])
-			end
-		end
 	end
 
-	-- Add Dummy abilities
-	for index = 0, 3 do
-		if hero:GetAbilityByIndex(index) == nil then
-			hero:AddAbility('generic_hidden')
-		end
+	-- Add spell dependencies
+	if self.subAbilities[build[1]] then
+		hero:AddAbility(self.subAbilities[build[1]])
+	else
+		hero:AddAbility('generic_hidden')
 	end
 
 	-- Add Ulti
@@ -331,24 +321,25 @@ function DotAOMG:ApplyBuild(hero)
 
 	-- Add talents
 	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
-	hero:AddAbility('special_bonus_movement_speed_20')
+	hero:AddAbility('special_bonus_all_stats_5')
+	hero:AddAbility('special_bonus_mp_350')
+	hero:AddAbility('special_bonus_hp_350')
+	hero:AddAbility('special_bonus_strength_10')
+	hero:AddAbility('special_bonus_intelligence_10')
+	hero:AddAbility('special_bonus_attack_damage_250')
+	hero:AddAbility('special_bonus_agility_100')
 
 	-- print all abilities
-
+	--[[
 	print('[RANDOM OMG] Hero: ', hero:GetUnitName())
-	for index = 0, 22 do
+	for index = 0, 23 do
 		if hero:GetAbilityByIndex(index) ~= nil then
 			abilityName = hero:GetAbilityByIndex(index):GetAbilityName()
 			print('[RANDOM OMG] ', index)
 			print('[RANDOM OMG] ', abilityName)
 		end
 	end
+	]]
 end
 
 function DotAOMG:ChangeHero(hero, newHeroName)
@@ -480,17 +471,31 @@ function DotAOMG:RemoveAllSkills(hero)
 end
 
 function DotAOMG:OnPlayerLearnedAbility(keys)
-	if keys.abilityname == 'special_bonus_movement_speed_20' then
-		print('[RANDOM OMG] ', keys.abilityname)
-		if not PlayerResource:IsValidPlayerID(keys.player - 1) then
-			return
-		end
-		local player = PlayerResource:GetPlayer(keys.player - 1)
-		local hero = player:GetAssignedHero()
-		if hero or hero:IsRealHero() then
-			print('[RANDOM OMG] BaseMoveSpeed', hero:GetBaseMoveSpeed())
+	if not PlayerResource:IsValidPlayerID(keys.player - 1) then
+		return
+	end
+	local player = PlayerResource:GetPlayer(keys.player - 1)
+	local hero = player:GetAssignedHero()
+	if hero or hero:IsRealHero() then
+		if keys.abilityname == 'special_bonus_movement_speed_20' then
 			hero:SetBaseMoveSpeed(hero:GetBaseMoveSpeed() + 20)
-			print('[RANDOM OMG] Hero modified')
+		elseif keys.abilityname == 'special_bonus_all_stats_5' then
+			hero:ModifyAgility(5)
+			hero:ModifyIntellect(5)
+			hero:ModifyStrength(5)
+		elseif keys.abilityname == 'special_bonus_mp_350' then
+			hero:SetMaxMana(hero:GetMaxMana() + 350)
+		elseif keys.abilityname == 'special_bonus_hp_350' then
+			hero:SetMaxHealth(hero:GetMaxHealth() + 350)
+		elseif keys.abilityname == 'special_bonus_strength_10' then
+			hero:ModifyStrength(10)
+		elseif keys.abilityname == 'special_bonus_intelligence_10' then
+			hero:ModifyIntellect(10)
+		elseif keys.abilityname == 'special_bonus_attack_damage_160' then
+			hero:SetBaseDamageMax(hero:GetBaseDamageMax() + 160)
+			hero:SetBaseDamageMin(hero:GetBaseDamageMin() + 160)
+		elseif keys.abilityname == 'special_bonus_agility_100' then
+			hero:ModifyAgility(100)
 		end
 	end
 end
