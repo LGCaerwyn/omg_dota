@@ -36,11 +36,11 @@ function DotAOMG:InitGameMode()
 	GameRules:SetSameHeroSelectionEnabled( true )
 	GameRules:SetHeroSelectionTime( 5.0 )
 	GameRules:SetStrategyTime( 10.0 )
-	GameRules:SetPreGameTime( 60.0 )
+	GameRules:SetPreGameTime( 70.0 )
 	GameRules:GetGameModeEntity():SetFixedRespawnTime( -1 )
 	GameRules:SetUseUniversalShopMode( true )
 	--GameRules:SetGoldTickTime( 1.0 )
-	GameRules:SetGoldPerTick( 4 )
+	GameRules:SetGoldPerTick( 5 )
 
 	-- Register Think
 	GameMode:SetContextThink( "DotAOMG:RespawnThink", function() return self:RespawnThink() end, 0.25 )
@@ -252,7 +252,7 @@ function DotAOMG:OnEntityKilled(keys)
 		end
 
 		-- fast respawn
-		killedUnit:SetTimeUntilRespawn(killedUnit:GetRespawnTime()/4)
+		killedUnit:SetTimeUntilRespawn(killedUnit:GetRespawnTime()/5)
 	end
 end
 
@@ -322,11 +322,11 @@ function DotAOMG:ApplyBuild(hero)
 	-- Add talents
 	hero:AddAbility('special_bonus_movement_speed_20')
 	hero:AddAbility('special_bonus_all_stats_5')
-	hero:AddAbility('special_bonus_mp_350')
-	hero:AddAbility('special_bonus_hp_350')
 	hero:AddAbility('special_bonus_strength_10')
 	hero:AddAbility('special_bonus_intelligence_10')
-	hero:AddAbility('special_bonus_attack_damage_250')
+	hero:AddAbility('special_bonus_movement_speed_40')
+	hero:AddAbility('special_bonus_all_stats_10')
+	hero:AddAbility('special_bonus_attack_damage_160')
 	hero:AddAbility('special_bonus_agility_100')
 
 	-- print all abilities
@@ -483,14 +483,16 @@ function DotAOMG:OnPlayerLearnedAbility(keys)
 			hero:ModifyAgility(5)
 			hero:ModifyIntellect(5)
 			hero:ModifyStrength(5)
-		elseif keys.abilityname == 'special_bonus_mp_350' then
-			hero:SetMaxMana(hero:GetMaxMana() + 350)
-		elseif keys.abilityname == 'special_bonus_hp_350' then
-			hero:SetMaxHealth(hero:GetMaxHealth() + 350)
 		elseif keys.abilityname == 'special_bonus_strength_10' then
 			hero:ModifyStrength(10)
 		elseif keys.abilityname == 'special_bonus_intelligence_10' then
 			hero:ModifyIntellect(10)
+		elseif keys.abilityname == 'special_bonus_movement_speed_40' then
+			hero:SetBaseMoveSpeed(hero:GetBaseMoveSpeed() + 40)
+		elseif keys.abilityname == 'special_bonus_all_stats_10' then
+			hero:ModifyAgility(10)
+			hero:ModifyIntellect(10)
+			hero:ModifyStrength(10)
 		elseif keys.abilityname == 'special_bonus_attack_damage_160' then
 			hero:SetBaseDamageMax(hero:GetBaseDamageMax() + 160)
 			hero:SetBaseDamageMin(hero:GetBaseDamageMin() + 160)
