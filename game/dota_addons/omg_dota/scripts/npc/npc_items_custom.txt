@@ -1,0 +1,13 @@
+"DOTAAbilities"
+{
+	"item_tpscroll"
+	{
+		"AbilityCooldown"				"5.0"
+	}
+	"item_moon_shard"
+	{
+		"ItemStockInitial"				"0"
+		"ItemPurchasable"				"0"
+		"ItemStockTime"					"12000.0"
+	}
+}

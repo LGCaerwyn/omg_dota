@@ -70,6 +70,8 @@ function DotAOMG:InitGameMode()
 	
 	self.noChange = {}
 
+	self.precachedHeroes = {}
+
 	print('[RANDOM OMG] Random OMG loaded.')
 end
 
@@ -184,7 +186,7 @@ function DotAOMG:OnGameRulesStateChange(keys)
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_STRATEGY_TIME')
 	elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_PRE_GAME')
-		self:PostLoadPrecache()
+		--self:PostLoadPrecache()
 	elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		print('[RANDOM OMG] DOTA_GAMERULES_STATE_GAME_IN_PROGRESS')
 	end
@@ -198,6 +200,17 @@ function DotAOMG:PostLoadPrecache()
 		print('[RANDOM OMG] Precaching Hero: ', heroName)
 		PrecacheUnitByNameAsync(heroName, function(unit) end)
 	end
+end
+
+function DotAOMG:PrecacheHero(heroName)
+	if self.precachedHeroes[heroName] == true then
+		return
+	end
+
+	print('[RANDOM OMG] Precaching Hero: ', heroName)
+	--Say(nil, 'Precaching Hero: ' .. string.sub(heroName, 15), false)
+	PrecacheUnitByNameAsync(heroName, function(unit) end)
+	self.precachedHeroes[heroName] = true
 end
 
 function DotAOMG:OnConnectFull(keys)
@@ -382,7 +395,7 @@ function DotAOMG:ChangeHero(hero, newHeroName)
 		-- Change the owner of the items owned by the hero to the player
 		local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
 		if courier ~= nil then
-			for i=0, 5 do
+			for i=0, 8 do
 				local item = courier:GetItemInSlot(i)
 				if item ~= nil then
 					if item:GetPurchaser() == hero then
@@ -409,7 +422,7 @@ function DotAOMG:ChangeHero(hero, newHeroName)
 			-- Change the owner of the items back to the new hero
 			local courier = PlayerResource:GetNthCourierForTeam(0, PlayerResource:GetTeam(playerID))
 			if courier ~= nil then
-				for i=0, 5 do
+				for i=0, 8 do
 					local item = courier:GetItemInSlot(i)
 					if item ~= nil then
 						if item:GetPurchaser() == ply then
@@ -450,7 +463,10 @@ function DotAOMG:ChangeHero(hero, newHeroName)
 end
 
 function DotAOMG:ChooseRandomHero()
-	return self.heroList[math.random(1, #self.heroList)]
+	local hero = self.heroList[math.random(1, #self.heroList)]
+	-- Precache the hero
+	self:PrecacheHero(hero)
+	return hero
 end
 
 function DotAOMG:GetRandomAbility(sort)
@@ -458,7 +474,10 @@ function DotAOMG:GetRandomAbility(sort)
 		sort = 'Abs'
 	end
 
-	return self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
+	local ability = self.vAbListSort[sort][math.random(1, #self.vAbListSort[sort])]
+	-- Precache the hero
+	self:PrecacheHero(self:FindHeroOwner(ability))
+	return ability
 end
 
 function DotAOMG:RemoveAllSkills(hero)
