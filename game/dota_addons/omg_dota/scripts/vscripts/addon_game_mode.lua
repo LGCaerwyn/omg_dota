@@ -490,6 +490,7 @@ function DotAOMG:RemoveAllSkills(hero)
 end
 
 function DotAOMG:OnPlayerLearnedAbility(keys)
+--[[
 	if not PlayerResource:IsValidPlayerID(keys.player - 1) then
 		return
 	end
@@ -519,4 +520,5 @@ function DotAOMG:OnPlayerLearnedAbility(keys)
 			hero:ModifyAgility(100)
 		end
 	end
+]]
 end
